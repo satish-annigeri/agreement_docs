@@ -155,7 +155,7 @@ def docx2pdf_windows(docx_flist):
                 capture_output=True,
             )
             print(docx_fname, res.returncode)
-            subprocess.run(f"rm {docx_fname}", shell=True)
+            subprocess.run(f"del {docx_fname}", shell=True)
     else:
         raise OSError
 
