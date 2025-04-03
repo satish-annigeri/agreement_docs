@@ -1,5 +1,6 @@
 from os.path import isfile
 import subprocess
+import platform
 
 
 from mailmerge import MailMerge
@@ -98,8 +99,6 @@ def docx_merge(
 
 
 def docx2pdf_linux(docx_flist):
-    import platform
-
     if platform.system() == "Linux":
         res = subprocess.run("which soffice", shell=True, capture_output=True)
         if res.returncode == 0:
@@ -131,8 +130,6 @@ def docx2pdf_linux(docx_flist):
 
 
 def docx2pdf_windows(docx_flist):
-    import platform
-
     if platform.system() == "Windows":
         res = subprocess.run("where soffice", shell=True, capture_output=True)
         if res.returncode == 0:
@@ -176,4 +173,10 @@ if __name__ == "__main__":
     docx_flist = docx_merge(
         distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname, fname_tpl
     )
-    docx2pdf_linux(docx_flist)
+    match platform.system:
+        case "Linux":
+            docx2pdf_linux(docx_flist)
+        case "Windows":
+            docx2pdf_windows(docx_flist)
+        case _:
+            raise OSError
