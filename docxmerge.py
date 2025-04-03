@@ -173,7 +173,7 @@ if __name__ == "__main__":
     docx_flist = docx_merge(
         distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname, fname_tpl
     )
-    match platform.system:
+    match platform.system():
         case "Linux":
             docx2pdf_linux(docx_flist)
         case "Windows":
