@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Microsoft 365, CSV and PDF files
+*.docx
+*.xlsx
+*.doc
+*.xls
+*.csv
+*.pdf
+*.zip
+*.html
+
+# Input and output directories
+templates/
+output/
+data/
