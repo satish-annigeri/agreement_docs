@@ -158,25 +158,3 @@ def docx2pdf_windows(docx_flist):
             subprocess.run(f"del {docx_fname}", shell=True)
     else:
         raise OSError
-
-
-if __name__ == "__main__":
-    distributor_fname = "distributors.xlsx"
-    exhibitor_fname = "exhibitors.xlsx"
-    theatre_fname = "chhaava_theatres.xlsx"
-    docx_tpl_fname = "agreement_template.docx"
-    print(f"\n\n{'=' * 70}\n\n")
-
-    con.print(get_docx_mergefields("agreement_template.docx"))
-
-    fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
-    docx_flist = docx_merge(
-        distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname, fname_tpl
-    )
-    match platform.system():
-        case "Linux":
-            docx2pdf_linux(docx_flist)
-        case "Windows":
-            docx2pdf_windows(docx_flist)
-        case _:
-            raise OSError
