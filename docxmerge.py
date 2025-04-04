@@ -8,6 +8,7 @@ from rich.console import Console
 
 
 from mergedata import (
+    extract_distributor_data,
     extract_exhibitor_data,
     extract_annexure_data,
 )
@@ -55,9 +56,10 @@ def docx_mergefields(
     tpl.write(docx_output_fname)
 
 
-def docx_merge(distributor_data, grouped_df, docx_tpl_fname, fname_tpl):
+def docx_merge(distributors, grouped_df, docx_tpl_fname, fname_tpl):
     # print("\nPreparing data for merging...")
     # df = join_data(exhibitors, theatres)
+    distributor_data = extract_distributor_data(distributors)
 
     count = 0
     flist = []
