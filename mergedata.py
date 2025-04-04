@@ -169,19 +169,19 @@ if __name__ == "__main__":
         distributors = read_excel(distributors_fname)
         exhibitors = read_excel(exhibitors_fname)
         theatres = read_excel(theatres_fname)
-        print(f"Distributors: {distributors.height}")
-        print(f"Exhibitors: {exhibitors.height}")
-        print(f"Theatres: {theatres.height}")
+        # print(f"Distributors: {distributors.height}")
+        # print(f"Exhibitors: {exhibitors.height}")
+        # print(f"Theatres: {theatres.height}")
         distributors = clean_distributors_data(distributors)
         exhibitors = clean_exhibitors_data(exhibitors)
         theatres = clean_theatres_data(theatres)
-        print(distributors)
-        print(exhibitors)
-        print(
-            theatres["theatre", "station", "release_date_long", "agreement_date_long"]
-        )
+        # print(distributors)
+        # print(exhibitors)
+        # print(
+        #     theatres["theatre", "station", "release_date_long", "agreement_date_long"]
+        # )
         df = join_data(exhibitors, theatres)
-        print(df["exhibitor", "theatre", "station", "release_date", "agreement_date"])
+        # print(df["exhibitor", "theatre", "station", "release_date", "agreement_date"])
         group_cols = [
             "exhibitor",
             "exhibitor_place",
@@ -190,15 +190,15 @@ if __name__ == "__main__":
             "agreement_date",
         ]
 
-        print(f"\n\n{'-' * 40}\n\n")
+        # print(f"\n\n{'-' * 40}\n\n")
         distributor_data = extract_distributor_data(distributors)
-        con.print(distributor_data)
+        # con.print(distributor_data)
         grouped_df = group_data(df, group_cols)
         for g_exhibitor, g_theatres in grouped_df:
             exhibitor_data = extract_exhibitor_data(g_exhibitor, g_theatres)
-            con.print(exhibitor_data)
+            # con.print(exhibitor_data)
             annexure = extract_annexure_data(g_theatres)
-            print(annexure)
-            print()
+            # print(annexure)
+            # print()
     except Exception as e:
         print(f"{e}")
