@@ -1,4 +1,4 @@
-from os.path import isfile
+from os.path import isfile, splitext
 import subprocess
 import platform
 
@@ -20,6 +20,24 @@ from mergedata import (
 )
 
 con = Console()
+
+
+# ---- Utility Functions ----
+
+
+def with_suffix(fpath: str, suffix: str) -> str:
+    base, _ = splitext(fpath)
+    return base + suffix
+
+
+def print_header(header: str, underline: str = "-"):
+    print()
+    print(header)
+    print(f"{underline * len(header)}")
+    print()
+
+
+# ---- Functions to merge prepared data with template ----
 
 
 def get_docx_mergefields(docx_fname: str):
@@ -47,17 +65,21 @@ def docx_mergefields(
 def docx_merge(
     distributors_fname, exhibitors_fname, theatres_fname, docx_tpl_fname, fname_tpl
 ):
+    print(f"Reading: {distributors_fname}")
     distributors = read_excel(distributors_fname)
+    print(f"Reading: {exhibitors_fname}")
     exhibitors = read_excel(exhibitors_fname)
+    print(f"Reading: {theatres_fname}")
     theatres = read_excel(theatres_fname)
     distributors = clean_distributors_data(distributors)
     exhibitors = clean_exhibitors_data(exhibitors)
     theatres = clean_theatres_data(theatres)
+
+    print("\nPreparing data for merging...")
     df = join_data(exhibitors, theatres)
-    # print(df)
 
     distributor_data = extract_distributor_data(distributors)
-    # con.print(distributor_data)
+
     group_cols = [
         "exhibitor",
         "exhibitor_place",
@@ -69,7 +91,6 @@ def docx_merge(
     count = 0
     flist = []
     for g_exhibitors, g_theatres in grouped_df:
-        # print(g_exhibitors)
         count += 1
         exhibitor_data = extract_exhibitor_data(g_exhibitors, g_theatres)
         annexure = extract_annexure_data(g_theatres)
@@ -84,9 +105,8 @@ def docx_merge(
                 release_date=exhibitor_data['release_date'],
             )
         }.docx"
-        con.print(f"{docx_output_fname}")
-        # con.print(exhibitor_data)
-        con.print(annexure)
+        print(f"\t{docx_output_fname}")
+
         docx_mergefields(
             docx_tpl_fname,
             docx_output_fname,
@@ -109,7 +129,7 @@ def docx2pdf_linux(docx_flist):
             raise FileNotFoundError
 
         for docx_fname in docx_flist:
-            res = subprocess.run(
+            subprocess.run(
                 [
                     f"{SOFFICE_PATH}",
                     "--headless",
@@ -120,11 +140,11 @@ def docx2pdf_linux(docx_flist):
                     "/dev/null",
                     "2>&1",
                 ],
-                # shell=True,
-                capture_output=True,
+                shell=True,
+                # capture_output=True,
             )
-            print(docx_fname, res.returncode)
             subprocess.run(f"rm {docx_fname}", shell=True)
+            print(f"\t{with_suffix(docx_fname, '.pdf')}")
     else:
         raise OSError
 
@@ -147,14 +167,11 @@ def docx2pdf_windows(docx_flist):
                     "--convert-to",
                     "pdf:writer_pdf_Export",
                     f"{docx_fname}",
-                    ">",
-                    "NUL",
-                    "2>&1",
                 ],
-                # shell=True,
+                shell=True,
                 capture_output=True,
             )
-            print(docx_fname, res.returncode)
+            print(f"\t{with_suffix(docx_fname, '.pdf')}")
             subprocess.run(f"del {docx_fname}", shell=True)
     else:
         raise OSError
