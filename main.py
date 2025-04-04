@@ -1,21 +1,38 @@
 import platform
 from rich.console import Console
+from typing_extensions import Annotated
 
-from docxmerge import get_docx_mergefields, docx_merge, docx2pdf_linux, docx2pdf_windows
+
+import typer
 
 
+from docxmerge import (
+    docx_merge,
+    docx2pdf_linux,
+    docx2pdf_windows,
+    print_header,
+)  # get_docx_mergefields,
+
+
+app = typer.Typer()
 con = Console()
 
 
-def main(distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname):
-    print(f"\n\n{'=' * 70}\n\n")
-
-    con.print(get_docx_mergefields("agreement_template.docx"))
+def main(
+    theatre: str,
+    template: Annotated[
+        str, typer.Option("--template", "-t")
+    ] = "agreement_template.docx",
+    distributor: Annotated[
+        str, typer.Option("--distributor", "-d")
+    ] = "distributors.xlsx",
+    exhibitor: Annotated[str, typer.Option("--exhibitor", "-e")] = "exhibitors.xlsx",
+):
+    print_header("Preparing Agreement Documents")
 
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
-    docx_flist = docx_merge(
-        distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname, fname_tpl
-    )
+    docx_flist = docx_merge(distributor, exhibitor, theatre, template, fname_tpl)
+    print("\nConverting Word files to PDF and deleting Word files...")
     match platform.system():
         case "Linux":
             docx2pdf_linux(docx_flist)
@@ -26,8 +43,4 @@ def main(distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname):
 
 
 if __name__ == "__main__":
-    distributor_fname = "distributors.xlsx"
-    exhibitor_fname = "exhibitors.xlsx"
-    theatre_fname = "chhaava_theatres.xlsx"
-    docx_tpl_fname = "agreement_template.docx"
-    main(distributor_fname, exhibitor_fname, theatre_fname, docx_tpl_fname)
+    typer.run(main)
