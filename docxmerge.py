@@ -129,7 +129,7 @@ def docx2pdf_linux(docx_flist):
             raise FileNotFoundError
 
         for docx_fname in docx_flist:
-            subprocess.run(
+            res = subprocess.run(
                 [
                     f"{SOFFICE_PATH}",
                     "--headless",
@@ -140,8 +140,7 @@ def docx2pdf_linux(docx_flist):
                     "/dev/null",
                     "2>&1",
                 ],
-                shell=True,
-                # capture_output=True,
+                capture_output=True,
             )
             subprocess.run(f"rm {docx_fname}", shell=True)
             print(f"\t{with_suffix(docx_fname, '.pdf')}")
