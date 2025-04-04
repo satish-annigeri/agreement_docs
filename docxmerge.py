@@ -8,13 +8,6 @@ from rich.console import Console
 
 
 from mergedata import (
-    read_excel,
-    clean_distributors_data,
-    clean_exhibitors_data,
-    clean_theatres_data,
-    join_data,
-    group_data,
-    extract_distributor_data,
     extract_exhibitor_data,
     extract_annexure_data,
 )
@@ -62,32 +55,10 @@ def docx_mergefields(
     tpl.write(docx_output_fname)
 
 
-def docx_merge(
-    distributors_fname, exhibitors_fname, theatres_fname, docx_tpl_fname, fname_tpl
-):
-    print(f"Reading: {distributors_fname}")
-    distributors = read_excel(distributors_fname)
-    print(f"Reading: {exhibitors_fname}")
-    exhibitors = read_excel(exhibitors_fname)
-    print(f"Reading: {theatres_fname}")
-    theatres = read_excel(theatres_fname)
-    distributors = clean_distributors_data(distributors)
-    exhibitors = clean_exhibitors_data(exhibitors)
-    theatres = clean_theatres_data(theatres)
+def docx_merge(distributor_data, grouped_df, docx_tpl_fname, fname_tpl):
+    # print("\nPreparing data for merging...")
+    # df = join_data(exhibitors, theatres)
 
-    print("\nPreparing data for merging...")
-    df = join_data(exhibitors, theatres)
-
-    distributor_data = extract_distributor_data(distributors)
-
-    group_cols = [
-        "exhibitor",
-        "exhibitor_place",
-        "movie",
-        "release_date",
-        "agreement_date",
-    ]
-    grouped_df = group_data(df, group_cols)
     count = 0
     flist = []
     for g_exhibitors, g_theatres in grouped_df:

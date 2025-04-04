@@ -53,10 +53,23 @@ def read_csv(fname: str) -> pl.DataFrame:
         raise FileNotFoundError(f"{fname}: File not found")
 
 
-def read_data(distributor_fname: str, exhibitor_fname: str, theatre_fname: str):
+def read_data(
+    distributor_fname: str,
+    exhibitor_fname: str,
+    theatre_fname: str,
+    verbose: bool = False,
+):
+    # Read data
+    if verbose:
+        print(f"Reading: {distributor_fname}")
     distributors = read_excel(distributor_fname)
+    if verbose:
+        print(f"Reading: {exhibitor_fname}")
     exhibitors = read_excel(exhibitor_fname)
+    if verbose:
+        print(f"Reading: {theatre_fname}")
     theatres = read_excel(theatre_fname)
+
     return distributors, exhibitors, theatres
 
 
