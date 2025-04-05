@@ -107,22 +107,33 @@ def docx2pdf_linux(docx_flist):
         if not isfile(SOFFICE_PATH):
             raise FileNotFoundError
 
-        for docx_fname in docx_flist:
-            res = subprocess.run(
-                [
-                    f"{SOFFICE_PATH}",
-                    "--headless",
-                    "--convert-to",
-                    "pdf:writer_pdf_Export",
-                    f"{docx_fname}",
-                    ">",
-                    "/dev/null",
-                    "2>&1",
-                ],
-                capture_output=True,
+        progress = Progress(
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            # TaskProgressColumn(),
+            MofNCompleteColumn(),
+        )
+        with progress:
+            task = progress.add_task(
+                "[cyan]Converting to PDF...", total=len(docx_flist)
             )
-            subprocess.run(f"rm {docx_fname}", shell=True)
-            print(f"\t{with_suffix(docx_fname, '.pdf')}")
+            for docx_fname in docx_flist:
+                res = subprocess.run(
+                    [
+                        f"{SOFFICE_PATH}",
+                        "--headless",
+                        "--convert-to",
+                        "pdf:writer_pdf_Export",
+                        f"{docx_fname}",
+                        ">",
+                        "/dev/null",
+                        "2>&1",
+                    ],
+                    capture_output=True,
+                )
+                subprocess.run(f"rm {docx_fname}", shell=True)
+                # print(f"\t{with_suffix(docx_fname, '.pdf')}")
+                progress.advance(task)
     else:
         raise OSError
 
