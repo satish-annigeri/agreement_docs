@@ -9,8 +9,8 @@ from rich.progress import (
     Progress,
     TextColumn,
     BarColumn,
-    TaskProgressColumn,
     MofNCompleteColumn,
+    TaskProgressColumn,
 )
 
 from mergedata import (
@@ -108,16 +108,24 @@ def docx2pdf_linux(docx_flist):
             raise FileNotFoundError
 
         progress = Progress(
-            TextColumn("[progress.description]{task.description}"),
+            TaskProgressColumn(),
             BarColumn(),
-            # TaskProgressColumn(),
             MofNCompleteColumn(),
+            TextColumn("[cyan]{task.fields[progress_description]}"),
+            TextColumn("[bold cyan]{task.fields[task_description]}"),
         )
         with progress:
             task = progress.add_task(
-                "[cyan]Converting to PDF...", total=len(docx_flist)
+                "[cyan]Converting to PDF: ",
+                total=len(docx_flist),
+                progress_description="Converting to PDF:",
+                task_description="Filename",
             )
+
             for docx_fname in docx_flist:
+                progress.update(
+                    task, task_description=f"{with_suffix(docx_fname, '.pdf')}"
+                )
                 res = subprocess.run(
                     [
                         f"{SOFFICE_PATH}",
@@ -132,7 +140,6 @@ def docx2pdf_linux(docx_flist):
                     capture_output=True,
                 )
                 subprocess.run(f"rm {docx_fname}", shell=True)
-                # print(f"\t{with_suffix(docx_fname, '.pdf')}")
                 progress.advance(task)
     else:
         raise OSError
@@ -149,16 +156,24 @@ def docx2pdf_windows(docx_flist):
             raise FileNotFoundError
 
         progress = Progress(
-            TextColumn("[progress.description]{task.description}"),
+            TaskProgressColumn(),
             BarColumn(),
-            # TaskProgressColumn(),
             MofNCompleteColumn(),
+            TextColumn("[cyan]{task.fields[progress_description]}"),
+            TextColumn("[bold cyan]{task.fields[task_description]}"),
         )
         with progress:
             task = progress.add_task(
-                "[cyan]Converting to PDF...", total=len(docx_flist)
+                "[cyan]Converting to PDF: ",
+                total=len(docx_flist),
+                progress_description="Converting to PDF:",
+                task_description="Filename",
             )
+
             for docx_fname in docx_flist:
+                progress.update(
+                    task, task_description=f"{with_suffix(docx_fname, '.pdf')}"
+                )
                 res = subprocess.run(
                     [
                         f"{SOFFICE_PATH}",
@@ -170,7 +185,6 @@ def docx2pdf_windows(docx_flist):
                     shell=True,
                     capture_output=True,
                 )
-                # print(f"\t{with_suffix(docx_fname, '.pdf')}")
                 subprocess.run(f"del {docx_fname}", shell=True)
                 progress.advance(task)
     else:
