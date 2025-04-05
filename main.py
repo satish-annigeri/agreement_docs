@@ -66,7 +66,7 @@ def main(
         print(f"Invalid template file {template_fname}. Must be a .docx")
         sys.exit(1)
     t2 = time.perf_counter()
-    print(f"\nGenerating Microsoft Word documents took: {t2 - t1:.4f} s")
+    print(f"\nGenerating Microsoft Word documents: {t2 - t1:.4f} s")
 
     print("\nConverting Microsoft Word files to PDF and deleting them...")
     match platform.system():
@@ -77,8 +77,8 @@ def main(
         case _:
             raise OSError
     t3 = time.perf_counter()
-    print(f"\nGenerating Microsoft Word documents took: {t2 - t1:.4f} s")
-    print(f"Converting Microsoft Word documents to PDF took: {t3 - t2:.4f} s")
+    print(f"\nGenerating Microsoft Word documents: {t2 - t1:.4f} s")
+    print(f"Converting Microsoft Word documents to PDF: {t3 - t2:.4f} s")
     print(
         f"Total execution time: {t3 - t1:.4f} s for {len(docx_flist)} files. Average: {(t3 - t1) / len(docx_flist):.4f} s per file."
     )

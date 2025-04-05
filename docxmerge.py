@@ -5,7 +5,13 @@ import platform
 
 from mailmerge import MailMerge
 from rich.console import Console
-
+from rich.progress import (
+    Progress,
+    TextColumn,
+    BarColumn,
+    TaskProgressColumn,
+    MofNCompleteColumn,
+)
 
 from mergedata import (
     extract_distributor_data,
@@ -131,19 +137,30 @@ def docx2pdf_windows(docx_flist):
         if not isfile(SOFFICE_PATH):
             raise FileNotFoundError
 
-        for docx_fname in docx_flist:
-            res = subprocess.run(
-                [
-                    f"{SOFFICE_PATH}",
-                    "--headless",
-                    "--convert-to",
-                    "pdf:writer_pdf_Export",
-                    f"{docx_fname}",
-                ],
-                shell=True,
-                capture_output=True,
+        progress = Progress(
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            # TaskProgressColumn(),
+            MofNCompleteColumn(),
+        )
+        with progress:
+            task = progress.add_task(
+                "[cyan]Converting to PDF...", total=len(docx_flist)
             )
-            print(f"\t{with_suffix(docx_fname, '.pdf')}")
-            subprocess.run(f"del {docx_fname}", shell=True)
+            for docx_fname in docx_flist:
+                res = subprocess.run(
+                    [
+                        f"{SOFFICE_PATH}",
+                        "--headless",
+                        "--convert-to",
+                        "pdf:writer_pdf_Export",
+                        f"{docx_fname}",
+                    ],
+                    shell=True,
+                    capture_output=True,
+                )
+                # print(f"\t{with_suffix(docx_fname, '.pdf')}")
+                subprocess.run(f"del {docx_fname}", shell=True)
+                progress.advance(task)
     else:
         raise OSError
