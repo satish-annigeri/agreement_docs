@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <h2 align="center">BOOKING AGREEMENT</h1>
+
+    <p>This agreement made and entered herein at {{dist_place}} between {{dist_name}}, {{dist_address}}, {{dist_place}}
+      and the under mentioned Exhibitor {{exhibitor}}, {{exhibitor_place}} for the screening the Film on the terms &amp;
+      conditions mentioned hereunder: {{dist_name}}, {{dist_place}} GST REGISTRATION NO. {{dist_gst}}</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">Name of Controller</th>
+          <th style="text-align:left">Movie Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left">{{exhibitor}}</td>
+          <td style="text-align:left">Film: <strong>{{movie}}</strong> {{movie_description}}</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">{{exhibitor_place}}</td>
+          <td style="text-align:left"></td>
+        </tr>
+        <tr>
+          <td style="text-align:left">GST No. {{exhibitor_gst}}</td>
+          <td style="text-align:left">RELEASE DATE: {{release_date}} (Subject to simultaneous all India release)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">Name of Theatre: As per Annexure - 1</td>
+          <td style="text-align:left"></td>
+        </tr>
+        <tr>
+          <td style="text-align:left">Circuit: Karnataka</td>
+          <td style="text-align:left">Terms: As per Annexure - 2</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">Theatre location: As per Annexure - 1</td>
+          <td style="text-align:left"></td>
+        </tr>
+        <tr>
+          <td style="text-align:left">RUN: 1st RUN PERIOD OF RUN</td>
+          <td style="text-align:left"></td>
+        </tr>
+        <tr>
+          <td style="text-align:left">Daily: {{daily_shows}} Shows Open Run</td>
+          <td style="text-align:left"></td>
+        </tr>
+      </tbody>
+    </table>
+    <ol>
+      <li>That the exhibitor agrees and undertakes to screen said film &quot;{{movie}}&quot; at his theatre(s) from
+        {{release_date_long}} simultaneous with all India release along with all multiplexes and single screens of said
+        station.</li>
+      <li>The entity / Theatre/Person/the exhibitor will be responsible for making the payment of distributor share
+        along with applicable GST as per the tax invoice raised by the distributor.</li>
+      <li>Service Charge or/and Theatre Maintenance Charges shall not be deducted in admission/ticket rates.</li>
+      <li>The exhibitor is bound by this agreement to submit daily collection reports and weekly collection summary duly
+        stamped and signed authenticating the document. In absence of such documents the bills raised by Raikar Ventures
+        will be bonding on the entity / Theatre / Person / the exhibitor.</li>
+      <li>That the exhibitor agrees to pay the advance of {{advance_amt}} before the movie release.</li>
+      <li>The share amount shall be transferred through RTGS transfer only.</li>
+      <li>Bank details are as under:<br>Beneficiary Name: {{dist_name}}<br>Bank Name: {{bank_name}}<br>Bank Address:
+        {{bank_address}}<br>Bank Account No: {{bank_ac_number}}<br>IFS Code: {{bank_ifsc}}</li>
+      <li>Show casing and ticket pricing will be executed/ finalized with mutual consent only.</li>
+      <li>That the exhibitor further undertakes to pay over above share if any immediately after its
+        termination/discontinuation of the films.</li>
+      <li>That publicity expenses if any will be borne by the exhibitor alone and shall not be deducted in the DCR OR
+        Share.</li>
+      <li>Parties agree that this Agreement and all disputes, claims and differences arising out of and under this
+        Agreement shall in all respects, be subject to and submit to the exclusive jurisdiction of the competent courts
+        in Hubballi and no other courts.</li>
+      <li>Rest of the terms shall be as practiced in the film trade.</li>
+    </ol>
+    <h3 align="center">Annexure - 1</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:center">Sl. No.</th>
+          <th style="text-align:left">Theatre</th>
+          <th style="text-align:left">Station</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <p>{% for row in annexure -%}
+      | {{loop.index}} | {{row.theatre}} | {{row.station}} |
+      {% endfor %}</p>
+    <h3 align="center">Annexure - 2</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:center">Sl. No.</th>
+          <th style="text-align:left">Theatre</th>
+          <th style="text-align:left">Station</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <p>{% for row in annexure -%}
+      | {{loop.index}} | {{row.theatre}} | {{row.station}} |
+      {% endfor %}</p>
+    <p>IN WITNESS WHEREOF the parties hereunto have duly executed this Agreement on this {{agreement_date_long}}.</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">Exhibitor / Accredited Agent</th>
+          <th style="text-align:left"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left">{{exhibitor}}</td>
+          <td style="text-align:left">For {{dist_name}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+</body>
+
+</html>

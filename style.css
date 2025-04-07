@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Radley:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Molengo&family=Radley:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+body {
+    font-family: Lora;
+    font-size: 14px;
+    line-height: 140%;
+    max-width: 200em;;
+}
+h1, h2, h3 {
+    font-family: 'Nunito', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: bold;
+}
+h3 {
+    font-size: 120%;
+    line-height: 125%;
+}
+h2 {
+    font-size: 150%;
+    line-height: 125%;
+}
+h1 {
+    font-size: 200%;
+    line-height: 125%;
+}
+
+.roboto {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+  }
+  table {
+    border-collapse: collapse;
+    /* table-layout: fixed; */
+    width: auto;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 3px;
+    vertical-align: top; /* Aligns content to the top */
+}
+.center-header {
+    text-align: center; /* Centers the text */
+    margin: 20px 0; /* Optional: Adds some spacing */
+}
+li {
+    margin: 6px 0; /* Adds space above and below each list item */
+}
+@page {
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+    }
+}
+.address-big {
+    margin: 12px;
+    text-align: left;
+    font-family: Radley;
+    font-size: 200%;
+    font-weight: 200;
+}
+.address-small {
+    margin: 6px;
+    text-align: left;
+    font-family: Roboto;
+    font-size: 120%;
+    font-weight: 150;
+}
