@@ -63,8 +63,6 @@ def docx_mergefields(
 
 
 def docx_merge(distributors, grouped_df, docx_tpl_fname, fname_tpl):
-    # print("\nPreparing data for merging...")
-    # df = join_data(exhibitors, theatres)
     distributor_data = extract_distributor_data(distributors)
 
     count = 0
