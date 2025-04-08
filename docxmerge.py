@@ -18,16 +18,12 @@ from mergedata import (
     extract_exhibitor_data,
     extract_annexure_data,
 )
+from utils import with_suffix
 
 con = Console()
 
 
 # ---- Utility Functions ----
-
-
-def with_suffix(fpath: str, suffix: str) -> str:
-    base, _ = splitext(fpath)
-    return base + suffix
 
 
 def print_header(header: str, underline: str = "-"):
@@ -62,36 +58,56 @@ def docx_mergefields(
     tpl.write(docx_output_fname)
 
 
-def docx_merge(distributors, grouped_df, docx_tpl_fname, fname_tpl):
+def docx_merge(distributors, grouped_df, num_groups: int, docx_tpl_fname, fname_tpl):
     distributor_data = extract_distributor_data(distributors)
 
     count = 0
     flist = []
-    for g_exhibitors, g_theatres in grouped_df:
-        count += 1
-        exhibitor_data = extract_exhibitor_data(g_exhibitors, g_theatres)
-        annexure = extract_annexure_data(g_theatres)
-        docx_output_fname = f"{
-            fname_tpl.format(
-                count=count,
-                movie=exhibitor_data['movie'].lower(),
-                exhibitor=exhibitor_data['exhibitor']
-                .replace('/', '')
-                .replace(' ', '_')
-                .lower(),
-                release_date=exhibitor_data['release_date'],
-            )
-        }.docx"
-        print(f"\t{docx_output_fname}")
 
-        docx_mergefields(
-            docx_tpl_fname,
-            docx_output_fname,
-            distributor_data,
-            exhibitor_data,
-            annexure,
+    progress = Progress(
+        TaskProgressColumn(),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TextColumn("[cyan]{task.fields[progress_description]}"),
+        TextColumn("[bold cyan]{task.fields[task_description]}"),
+    )
+    with progress:
+        task = progress.add_task(
+            "[cyan]Generating Word file:",
+            total=num_groups,
+            progress_description="[cyan]Generating Word file:",
+            task_description="Filename",
         )
-        flist.append(docx_output_fname)
+        for g_exhibitors, g_theatres in grouped_df:
+            count += 1
+            exhibitor_data = extract_exhibitor_data(g_exhibitors, g_theatres)
+            annexure = extract_annexure_data(g_theatres)
+            docx_output_fname = f"{
+                fname_tpl.format(
+                    count=count,
+                    movie=exhibitor_data['movie'].lower(),
+                    exhibitor=exhibitor_data['exhibitor']
+                    .replace('/', '')
+                    .replace(' ', '_')
+                    .lower(),
+                    release_date=exhibitor_data['release_date'],
+                )
+            }.docx"
+            progress.update(
+                task, task_description=f"{with_suffix(docx_output_fname, '.pdf')}"
+            )
+            # print(f"\t{docx_output_fname}")
+
+            docx_mergefields(
+                docx_tpl_fname,
+                docx_output_fname,
+                distributor_data,
+                exhibitor_data,
+                annexure,
+            )
+            progress.advance(task)
+
+            flist.append(docx_output_fname)
     return flist
 
 
@@ -116,7 +132,7 @@ def docx2pdf_linux(docx_flist):
             task = progress.add_task(
                 "[cyan]Converting to PDF: ",
                 total=len(docx_flist),
-                progress_description="Converting to PDF:",
+                progress_description="[cyan]Converting to PDF:",
                 task_description="Filename",
             )
 

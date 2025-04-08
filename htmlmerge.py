@@ -2,12 +2,19 @@ import re
 import time
 from os.path import abspath, splitext
 from rich.console import Console
+from rich.progress import (
+    Progress,
+    TextColumn,
+    BarColumn,
+    MofNCompleteColumn,
+    TaskProgressColumn,
+)
 
 from jinja2 import Environment, FileSystemLoader
 import mistune
 from weasyprint import HTML
 
-from utils import tpl_suffix
+from utils import tpl_suffix, with_suffix
 
 from mergedata import (
     extract_distributor_data,
@@ -91,41 +98,61 @@ def md_html_mergefields(
     HTML(string=html_content).write_pdf(pdf_fname, stylesheets=[css])
 
 
-def md_html_merge(distributors, grouped_df, tpl_fname, tpl_dir, css, fname_tpl):
+def md_html_merge(
+    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css, fname_tpl
+):
     distributor_data = extract_distributor_data(distributors)
 
     count = 0
     flist = []
-    for g_exhibitors, g_theatres in grouped_df:
-        count += 1
-        exhibitor_data = extract_exhibitor_data(g_exhibitors, g_theatres)
-        annexure = extract_annexure_data(g_theatres)
 
-        pdf_fname = f"{
-            fname_tpl.format(
-                count=count,
-                movie=exhibitor_data['movie'].lower(),
-                exhibitor=exhibitor_data['exhibitor']
-                .replace('/', '')
-                .replace(' ', '_')
-                .lower(),
-                release_date=exhibitor_data['release_date'],
-            )
-        }.pdf"
-        print(pdf_fname)
-        flist.append(pdf_fname)
-        # con.print(distributor_data)
-        # con.print(exhibitor_data)
-        # con.print(annexure)
-        md_html_mergefields(
-            tpl_fname,
-            tpl_dir,
-            css,
-            pdf_fname,
-            distributor_data=distributor_data,
-            exhibitor_data=exhibitor_data,
-            annexure=annexure,
+    progress = Progress(
+        TaskProgressColumn(),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TextColumn("[cyan]{task.fields[progress_description]}"),
+        TextColumn("[bold cyan]{task.fields[task_description]}"),
+    )
+    with progress:
+        task = progress.add_task(
+            "[cyan]Generating Word file:",
+            total=num_groups,
+            progress_description="[cyan]Generating Word file:",
+            task_description="Filename",
         )
+        for g_exhibitors, g_theatres in grouped_df:
+            count += 1
+            exhibitor_data = extract_exhibitor_data(g_exhibitors, g_theatres)
+            annexure = extract_annexure_data(g_theatres)
+
+            pdf_fname = f"{
+                fname_tpl.format(
+                    count=count,
+                    movie=exhibitor_data['movie'].lower(),
+                    exhibitor=exhibitor_data['exhibitor']
+                    .replace('/', '')
+                    .replace(' ', '_')
+                    .lower(),
+                    release_date=exhibitor_data['release_date'],
+                )
+            }.pdf"
+            progress.update(task, task_description=f"{pdf_fname}")
+            # print(pdf_fname)
+            flist.append(pdf_fname)
+            # con.print(distributor_data)
+            # con.print(exhibitor_data)
+            # con.print(annexure)
+            md_html_mergefields(
+                tpl_fname,
+                tpl_dir,
+                css,
+                pdf_fname,
+                distributor_data=distributor_data,
+                exhibitor_data=exhibitor_data,
+                annexure=annexure,
+            )
+            progress.advance(task)
+
     return flist
 
 

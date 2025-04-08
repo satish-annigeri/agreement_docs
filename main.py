@@ -9,7 +9,7 @@ import typer
 
 
 from utils import tpl_suffix
-from mergedata import read_data, prepare_data, group_data
+from mergedata import read_data, prepare_data, group_data, unique_rows
 from docxmerge import (
     docx_merge,
     docx2pdf_linux,
@@ -55,6 +55,7 @@ def main(
         "agreement_date",
     ]
     grouped_df = group_data(df, group_cols)
+    num_groups = unique_rows(df, group_cols)
     t2 = time.perf_counter()
     con.log(f"Data preparation complete {t2 - t1:.2f}s")
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
@@ -62,10 +63,12 @@ def main(
     tpl_type = tpl_suffix(template_fname)
 
     if tpl_type == "docx":
-        con.log("Preparng Microsoft Word agreement files...")
-        flist = docx_merge(distributors, grouped_df, template_fname, fname_tpl)
+        # con.print("Preparing Microsoft Word agreement files...")
+        flist = docx_merge(
+            distributors, grouped_df, num_groups, template_fname, fname_tpl
+        )
         t3 = time.perf_counter()
-        con.log(f"Generation of Microsoft Word agreement documents {t3 - t2:.2f}s")
+        con.log(f"Generating Microsoft Word agreement documents took {t3 - t2:.2f}s")
 
         # print("Converting Microsoft Word files to PDF and deleting them...")
         match platform.system():
@@ -76,11 +79,17 @@ def main(
             case _:
                 raise OSError
         t4 = time.perf_counter()
-        con.log(f"Microsoft Word file converted to PDF {t4 - t3:.2f}s")
+        con.log(f"Converting Microsoft Word files to PDF took {t4 - t3:.2f}s")
         t_stop = t4
     elif tpl_type in ["md", "html"]:
         flist = md_html_merge(
-            distributors, grouped_df, template_fname, "", "style.css", fname_tpl
+            distributors,
+            grouped_df,
+            num_groups,
+            template_fname,
+            "",
+            "style.css",
+            fname_tpl,
         )
         t3 = time.perf_counter()
         t_stop = t3
