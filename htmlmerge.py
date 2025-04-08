@@ -8,6 +8,7 @@ from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
     TaskProgressColumn,
+    TimeElapsedColumn,
 )
 
 from jinja2 import Environment, FileSystemLoader
@@ -93,15 +94,16 @@ def md_html_merge(
     progress = Progress(
         TaskProgressColumn(),
         BarColumn(),
+        TimeElapsedColumn(),
         MofNCompleteColumn(),
         TextColumn("[cyan]{task.fields[progress_description]}"),
         TextColumn("[bold cyan]{task.fields[task_description]}"),
     )
     with progress:
         task = progress.add_task(
-            "[cyan]Generating PDF file:",
+            "",
             total=num_groups,
-            progress_description="[cyan]Generating PDF file:",
+            progress_description="",
             task_description="Filename",
         )
         for g_exhibitors, g_theatres in grouped_df:

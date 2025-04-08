@@ -11,6 +11,7 @@ from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
     TaskProgressColumn,
+    TimeElapsedColumn,
 )
 
 from mergedata import (
@@ -124,15 +125,16 @@ def docx2pdf_linux(docx_flist):
         progress = Progress(
             TaskProgressColumn(),
             BarColumn(),
+            TimeElapsedColumn(),
             MofNCompleteColumn(),
             TextColumn("[cyan]{task.fields[progress_description]}"),
             TextColumn("[bold cyan]{task.fields[task_description]}"),
         )
         with progress:
             task = progress.add_task(
-                "[cyan]Converting to PDF: ",
+                "",
                 total=len(docx_flist),
-                progress_description="[cyan]Converting to PDF:",
+                progress_description="",
                 task_description="Filename",
             )
 
@@ -172,15 +174,16 @@ def docx2pdf_windows(docx_flist):
         progress = Progress(
             TaskProgressColumn(),
             BarColumn(),
+            TimeElapsedColumn(),
             MofNCompleteColumn(),
             TextColumn("[cyan]{task.fields[progress_description]}"),
             TextColumn("[bold cyan]{task.fields[task_description]}"),
         )
         with progress:
             task = progress.add_task(
-                "[cyan]Converting to PDF: ",
+                "",
                 total=len(docx_flist),
-                progress_description="Converting to PDF:",
+                progress_description="",
                 task_description="Filename",
             )
 
