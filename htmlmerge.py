@@ -14,7 +14,7 @@ from jinja2 import Environment, FileSystemLoader
 import mistune
 from weasyprint import HTML
 
-from utils import tpl_suffix, with_suffix
+from utils import tpl_suffix
 
 from mergedata import (
     extract_distributor_data,
@@ -41,22 +41,6 @@ def get_jinja2_template(tpl_fname: str, tpl_dir: str):
     env = Environment(loader=FileSystemLoader(tpl_dir))
     tpl = env.get_template(tpl_fname)
     return tpl
-
-
-# def mdmerge(tpl_fname: str, tpl_dir: str = ".", **kwargs):
-#     if isfile(tpl_fname):
-#         tpl = get_jinja2_template(tpl_fname, tpl_dir)
-#         return tpl.render(**kwargs)
-#     else:
-#         raise FileNotFoundError
-
-
-# def htmlmerge(template_fname: str, tpl_dir: str = "", **kwargs):
-#     if isfile(tpl_fname):
-#         tpl = get_jinja2_template(tpl_fname, tpl_dir)
-#         return tpl.render(**kwargs)
-#     else:
-#         raise FileNotFoundError
 
 
 def md2html(md_fname: str) -> str:
@@ -115,9 +99,9 @@ def md_html_merge(
     )
     with progress:
         task = progress.add_task(
-            "[cyan]Generating Word file:",
+            "[cyan]Generating PDF file:",
             total=num_groups,
-            progress_description="[cyan]Generating Word file:",
+            progress_description="[cyan]Generating PDF file:",
             task_description="Filename",
         )
         for g_exhibitors, g_theatres in grouped_df:
@@ -139,9 +123,7 @@ def md_html_merge(
             progress.update(task, task_description=f"{pdf_fname}")
             # print(pdf_fname)
             flist.append(pdf_fname)
-            # con.print(distributor_data)
-            # con.print(exhibitor_data)
-            # con.print(annexure)
+
             md_html_mergefields(
                 tpl_fname,
                 tpl_dir,

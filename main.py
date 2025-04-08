@@ -93,7 +93,7 @@ def main(
         )
         t3 = time.perf_counter()
         t_stop = t3
-        con.log(f"Converted Markdown/HTML files to PDF {t3 - t2:.2f}s")
+        con.log(f"Converting Markdown/HTML files to PDF took {t3 - t2:.2f}s")
     else:
         print(
             f"Invalid template file {template_fname}. Must be a '.md.jinja' or '.html.jinja'"
