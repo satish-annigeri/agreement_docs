@@ -5,6 +5,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+@page {
+    size: A4; /* Standard A4 size */
+    margin-top: 0.8in;
+    margin-bottom: 0.8in;
+    margin-left: 1.2in;
+    margin-right: 0.8in;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+    }
+}
+
 body {
     font-family: 'Lora', 'Times New Roman', 'Georgia', 'Nimbus Roman', 'serif';
     font-size: 14px;
@@ -53,11 +64,6 @@ th, td {
 }
 li {
     margin: 6px 0; /* Adds space above and below each list item */
-}
-@page {
-    @bottom-right {
-        content: "Page " counter(page) " of " counter(pages);
-    }
 }
 .address-big {
     margin: 12px;
