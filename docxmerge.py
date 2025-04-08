@@ -1,4 +1,4 @@
-from os.path import isfile, splitext
+from os.path import isfile
 import subprocess
 import platform
 
