@@ -144,6 +144,10 @@ def group_data(df: pl.DataFrame, group_cols: list[str]):
     return df.group_by(group_cols, maintain_order=True)
 
 
+def unique_rows(df: pl.DataFrame, cols: str | list[str]) -> int:
+    return df.select(cols).unique().height
+
+
 def extract_distributor_data(distributors):
     return distributors.to_dicts()[0]
 
@@ -203,7 +207,8 @@ if __name__ == "__main__":
             "agreement_date",
         ]
 
-        # print(f"\n\n{'-' * 40}\n\n")
+        num_exhibitors = df.select(group_cols).unique()
+        print(f"Number of files: {num_exhibitors.height}")
         distributor_data = extract_distributor_data(distributors)
         # con.print(distributor_data)
         grouped_df = group_data(df, group_cols)
