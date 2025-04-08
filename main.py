@@ -33,7 +33,8 @@ def main(
     ] = "distributors.xlsx",
     exhibitor: Annotated[str, typer.Option("--exhibitor", "-e")] = "exhibitors.xlsx",
 ):
-    t1 = time.perf_counter()
+    t_start = time.perf_counter()
+    t1 = t_start
     print_header("Preparing Agreement Documents")
 
     distributor_fname = distributor
@@ -54,16 +55,19 @@ def main(
         "agreement_date",
     ]
     grouped_df = group_data(df, group_cols)
-
+    t2 = time.perf_counter()
+    con.log(f"Data preparation complete {t2 - t1:.2f}s")
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
 
     tpl_type = tpl_suffix(template_fname)
 
     if tpl_type == "docx":
-        print("\nPreparng Microsoft Word agreement files...")
+        con.log("Preparng Microsoft Word agreement files...")
         flist = docx_merge(distributors, grouped_df, template_fname, fname_tpl)
+        t3 = time.perf_counter()
+        con.log(f"Generation of Microsoft Word agreement documents {t3 - t2:.2f}s")
 
-        print("\nConverting Microsoft Word files to PDF and deleting them...")
+        # print("Converting Microsoft Word files to PDF and deleting them...")
         match platform.system():
             case "Linux":
                 docx2pdf_linux(flist)
@@ -71,24 +75,24 @@ def main(
                 docx2pdf_windows(flist)
             case _:
                 raise OSError
+        t4 = time.perf_counter()
+        con.log(f"Microsoft Word file converted to PDF {t4 - t3:.2f}s")
+        t_stop = t4
     elif tpl_type in ["md", "html"]:
         flist = md_html_merge(
             distributors, grouped_df, template_fname, "", "style.css", fname_tpl
         )
-        for pdf_fname in flist:
-            print(pdf_fname)
+        t3 = time.perf_counter()
+        t_stop = t3
+        con.log(f"Converted Markdown/HTML files to PDF {t3 - t2:.2f}s")
     else:
         print(
             f"Invalid template file {template_fname}. Must be a '.md.jinja' or '.html.jinja'"
         )
         sys.exit(1)
-
-    t2 = time.perf_counter()
-    t3 = time.perf_counter()
-    print(f"\nGenerating Microsoft Word documents: {t2 - t1:.4f}s")
-    print(f"Converting Microsoft Word documents to PDF: {t3 - t2:.4f}s")
-    print(
-        f"Total execution time: {t3 - t1:.4f}s for {len(flist)} files. Average: {(t3 - t1) / len(flist):.4f}s per file."
+    t_total = t_stop - t_start
+    con.print(
+        f"\nTotal execution time: {t_total:.2f}s for {len(flist)} files. Average: {t_total / len(flist):.2f}s per file."
     )
 
 
