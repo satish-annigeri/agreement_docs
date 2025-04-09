@@ -10,7 +10,7 @@ Template files can be prepared in one of the following formats:
 
 Template files in Microsoft Word format are populated with data, written to a Microsoft Word file and converted to a PDF file by the LibreOffice `soffice` program. LibreOffice is therefore a requirement for this to work.
 
-Template files in Jinja Markdown format are populated with data and written to HTML format. Template files in Jinja HTML format are populated with data and written to HTML format. The HTML file so obtained is  and then converted to a PDF file using [Weasyprint](https://weasyprint.org/). Weasyprint depends on Pango and is therefore a requirement for this to work. Refer to Weasyprint documentation to learn how to [install Pango](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html) for your operating system.
+Template files in Jinja Markdown format are populated with data and written to HTML format. Template files in Jinja HTML format are populated with data and written to HTML format. The HTML file so obtained is  and then converted to a PDF file using [WeasyPrint](https://weasyprint.org/). WeasyPrint depends on Pango and is therefore a requirement for this to work. Refer to WeasyPrint documentation to learn how to [install Pango](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html) for your operating system.
 
 ## External Dependencies
 
@@ -19,7 +19,10 @@ The following external programs must be installed:
 1. [`git`](https://git-scm.com) to clone the source code from GitHub
 2. [Astral-sh `uv`](https://docs.astral.sh/uv/) to manage Python projects
 3. [`LibreOffice`](https://www.libreoffice.org/) to convert Microsoft Word documents to PDF when using Microsoft Word templates
-4. [`Pango`](https://github.com/GNOME/pango) to convert HTML to PDF when using Markdown or HTML Jinja templates
+4. [`MSYS2`](https://www.msys2.org/#installation) to install `Pango` on Windows
+5. [`Pango`](https://github.com/GNOME/pango) to convert HTML to PDF when using Markdown or HTML Jinja templates
+
+See [instructions here](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html) to install `Pango` on Windows as well as GNU/Linux systems and WSL for Windows.
 
 ## Install `uv`: A Python Package and Project Management Tool
 
