@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.progress import (
     Progress,
     TextColumn,
-    BarColumn,
+    SpinnerColumn,
     MofNCompleteColumn,
     TaskProgressColumn,
     TimeElapsedColumn,
@@ -67,7 +67,7 @@ def docx_merge(distributors, grouped_df, num_groups: int, docx_tpl_fname, fname_
 
     progress = Progress(
         TaskProgressColumn(),
-        BarColumn(),
+        SpinnerColumn(),
         MofNCompleteColumn(),
         TextColumn("[cyan]{task.fields[progress_description]}"),
         TextColumn("[bold cyan]{task.fields[task_description]}"),
@@ -97,7 +97,6 @@ def docx_merge(distributors, grouped_df, num_groups: int, docx_tpl_fname, fname_
             progress.update(
                 task, task_description=f"{with_suffix(docx_output_fname, '.pdf')}"
             )
-            # print(f"\t{docx_output_fname}")
 
             docx_mergefields(
                 docx_tpl_fname,
@@ -124,7 +123,7 @@ def docx2pdf_linux(docx_flist):
 
         progress = Progress(
             TaskProgressColumn(),
-            BarColumn(),
+            SpinnerColumn(),
             TimeElapsedColumn(),
             MofNCompleteColumn(),
             TextColumn("[cyan]{task.fields[progress_description]}"),
@@ -173,7 +172,7 @@ def docx2pdf_windows(docx_flist):
 
         progress = Progress(
             TaskProgressColumn(),
-            BarColumn(),
+            SpinnerColumn(),
             TimeElapsedColumn(),
             MofNCompleteColumn(),
             TextColumn("[cyan]{task.fields[progress_description]}"),

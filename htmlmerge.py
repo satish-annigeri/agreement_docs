@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.progress import (
     Progress,
     TextColumn,
-    BarColumn,
+    SpinnerColumn,
     MofNCompleteColumn,
     TaskProgressColumn,
     TimeElapsedColumn,
@@ -93,7 +93,7 @@ def md_html_merge(
 
     progress = Progress(
         TaskProgressColumn(),
-        BarColumn(),
+        SpinnerColumn(),
         TimeElapsedColumn(),
         MofNCompleteColumn(),
         TextColumn("[cyan]{task.fields[progress_description]}"),
