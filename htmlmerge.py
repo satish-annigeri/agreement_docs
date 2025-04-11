@@ -68,7 +68,6 @@ def md_html_mergefields(
     annexure,
 ):
     time_now = pendulum.now().format("YYYY-MM-DDTHH:MM:SSZ")
-    print(time_now)
     if tpl_type == "md":
         md_content = jinja_tpl.render(
             **distributor_data,
