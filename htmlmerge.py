@@ -15,7 +15,7 @@ from rich.progress import (
 import pendulum
 from jinja2 import Environment, FileSystemLoader
 import mistune
-from weasyprint import HTML, CSS, __version__ as wezp_ver
+from weasyprint import HTML, __version__ as wezp_ver
 from weasyprint.text.fonts import FontConfiguration
 
 
@@ -61,7 +61,7 @@ def md2html(md_fname: str) -> str:
 def md_html_mergefields(
     jinja_tpl,
     tpl_type: str,
-    css: CSS,
+    css: str,
     pdf_fname: str,
     distributor_data,
     exhibitor_data,
@@ -91,7 +91,7 @@ def md_html_mergefields(
 
 
 def md_html_merge(
-    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css_fname, fname_tpl
+    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css, fname_tpl
 ):
     distributor_data = extract_distributor_data(distributors)
 
@@ -108,7 +108,6 @@ def md_html_merge(
     )
     tpl_type = tpl_suffix(tpl_fname)
     jinja_tpl = get_jinja2_template(tpl_fname, tpl_dir)
-    css = CSS(filename=css_fname)
 
     with progress:
         task = progress.add_task(
