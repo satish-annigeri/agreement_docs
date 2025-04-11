@@ -56,26 +56,25 @@ def md2html(md_fname: str) -> str:
 
 
 def md_html_mergefields(
-    tpl_fname: str,
-    tpl_dir: str,
+    jinja_tpl,
+    tpl_type: str,
+    # tpl_fname: str,
+    # tpl_dir: str,
     css: str,
     pdf_fname: str,
     distributor_data,
     exhibitor_data,
     annexure,
 ):
-    tpl_type = tpl_suffix(tpl_fname)
-    if tpl_type in ["md", "html"]:
-        tpl = get_jinja2_template(tpl_fname, tpl_dir)
     if tpl_type == "md":
-        md_content = tpl.render(
+        md_content = jinja_tpl.render(
             **distributor_data,
             **exhibitor_data,
             annexure=annexure,
         )
         html_content = mistune.html(md_content)
     elif tpl_type == "html":
-        html_content = tpl.render(
+        html_content = jinja_tpl.render(
             **distributor_data,
             **exhibitor_data,
             annexure=annexure,
@@ -99,6 +98,9 @@ def md_html_merge(
         TextColumn("[cyan]{task.fields[progress_description]}"),
         TextColumn("[bold cyan]{task.fields[task_description]}"),
     )
+    tpl_type = tpl_suffix(tpl_fname)
+    jinja_tpl = get_jinja2_template(tpl_fname, tpl_dir)
+
     with progress:
         task = progress.add_task(
             "",
@@ -126,8 +128,10 @@ def md_html_merge(
             flist.append(pdf_fname)
 
             md_html_mergefields(
-                tpl_fname,
-                tpl_dir,
+                jinja_tpl,
+                tpl_type,
+                # tpl_fname,
+                # tpl_dir,
                 css,
                 pdf_fname,
                 distributor_data=distributor_data,
@@ -152,7 +156,6 @@ if __name__ == "__main__":
     css = "agreement.css"
 
     print(f"Jinja2 template: {tpl_fname}")
-    jinja_tpl = get_jinja2_template(tpl_fname, "")
     tpl = get_jinja2_template(tpl_fname, "")
     if suffix.lower() == ".md":
         md_content = tpl.render(title=title, headings=headings)
