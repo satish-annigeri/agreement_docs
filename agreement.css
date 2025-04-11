@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Radley:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Molengo&family=Radley:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@font-face {
+    font-family: Fira Sans;
+    font-weight: 400;
+    src: url(firasans-regular.otf);
+}
+@font-face {
+  font-family: Fira Sans;
+  font-style: italic;
+  font-weight: 400;
+  src: url(firasans-italic.otf);
+}
+@font-face {
+  font-family: Fira Sans;
+  font-weight: 300;
+  src: url(firasans-light.otf);
+}
+@font-face {
+  font-family: Fira Sans;
+  font-style: italic;
+  font-weight: 300;
+  src: url(firasans-lightitalic.otf);
+}
+@font-face {
+  font-family: Fira Sans;
+  font-weight: 700;
+  src: url(firasans-bold.otf);
+}
+
+@page {
+  size: A4;
+  margin-left: 1.2in;
+  margin-right: 0.8in;
+  margin-top: 0.8in;
+  margin-bottom: 0.8in;
+  @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+  }
+}
+
+html {
+  color: #393939;
+  font-family: Fira Sans;
+  font-size: 10pt;
+  font-weight: 310;
+  line-height: 1.5;
+}
+body {
+  margin: 0;
+}
+
+address > p:first-of-type {
+  color: blue;
+  font-weight: bold;
+  font-size: 170%;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  line-height: 1.2;
+}
+address > p {
+  color: black;
+  font-weight: bold;
+  font-size: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  line-height: 1.2;
+}
+
+#annexure {
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+td {
+  vertical-align: top;
+}
+
+
+#annexure th, #annexure td {
+  border: 1px solid gray;
+  padding: 3px;
+  font-size: 90%;
+  text-align: left;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+#annexure th {
+  text-align: center;
+}
+#annexure caption {
+  text-align: center;
+  font-size: 120%;
+  font-weight: bold;
+}
+li {
+  margin: 3px auto;
+}
+
+

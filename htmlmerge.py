@@ -76,8 +76,8 @@ def md_html_mergefields(
         html_content = mistune.html(md_content)
     elif tpl_type == "html":
         html_content = tpl.render(
-            distributor_data=distributor_data,
-            exhibitor_data=exhibitor_data,
+            **distributor_data,
+            **exhibitor_data,
             annexure=annexure,
         )
     HTML(string=html_content).write_pdf(pdf_fname, stylesheets=[css])
@@ -123,7 +123,6 @@ def md_html_merge(
                 )
             }.pdf"
             progress.update(task, task_description=f"{pdf_fname}")
-            # print(pdf_fname)
             flist.append(pdf_fname)
 
             md_html_mergefields(
@@ -136,15 +135,7 @@ def md_html_merge(
                 annexure=annexure,
             )
             progress.advance(task)
-
     return flist
-
-
-# def html2pdf(input_html: str, stylesheet: str, pdf_fname: str):
-#     if is_html_fname(input_html):
-#         with open(input_html, "r") as f:
-#             input_html = f.read()
-#     HTML(string=input_html).write_pdf(pdf_fname, stylesheets=[stylesheet])
 
 
 if __name__ == "__main__":
@@ -158,7 +149,7 @@ if __name__ == "__main__":
     basename, _ = splitext(tpl_fname)
     basename, suffix = splitext(basename)
     pdf_fname = f"{basename}.pdf"
-    css = "style.css"
+    css = "agreement.css"
 
     print(f"Jinja2 template: {tpl_fname}")
     jinja_tpl = get_jinja2_template(tpl_fname, "")

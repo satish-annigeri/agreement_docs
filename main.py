@@ -24,14 +24,30 @@ con = Console()
 
 
 def main(
-    theatre: str,
+    theatre: Annotated[str, typer.Argument(help="Theatres data in .xlsx format")],
     template: Annotated[
-        str, typer.Option("--template", "-t")
+        str,
+        typer.Option(
+            "--template",
+            "-t",
+            help="Template file in .docx, .md.jinja or .html.jinja format",
+        ),
     ] = "agreement_template.docx",
+    css: Annotated[
+        str,
+        typer.Option(
+            "--css",
+            "-c",
+            help="CSS stylesheet file for Markdown and HTML template files",
+        ),
+    ] = "agreement.css",
     distributor: Annotated[
-        str, typer.Option("--distributor", "-d")
+        str,
+        typer.Option("--distributor", "-d", help="Distributor data in .xlsx format"),
     ] = "distributors.xlsx",
-    exhibitor: Annotated[str, typer.Option("--exhibitor", "-e")] = "exhibitors.xlsx",
+    exhibitor: Annotated[
+        str, typer.Option("--exhibitor", "-e", help="Exhibitors data in .xlsx format")
+    ] = "exhibitors.xlsx",
 ):
     t_start = time.perf_counter()
     t1 = t_start
@@ -45,6 +61,11 @@ def main(
     distributors, exhibitors, theatres = read_data(
         distributor_fname, exhibitor_fname, theatre_fname, verbose=True
     )
+    tpl_type = tpl_suffix(template_fname)
+    print(f"Template file: {template_fname}")
+    print(f"Template type: {tpl_type}")
+    if tpl_type in ["md", "html"]:
+        print(f"Stylesheet: {css}")
     distributors, df = prepare_data(distributors, exhibitors, theatres)
 
     group_cols = [
@@ -59,8 +80,7 @@ def main(
     t2 = time.perf_counter()
     con.log(f"Data preparation complete {t2 - t1:.2f}s")
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
-
-    tpl_type = tpl_suffix(template_fname)
+    # css = "agreement.css"
 
     if tpl_type == "docx":
         # con.print("Preparing Microsoft Word agreement files...")
@@ -88,7 +108,7 @@ def main(
             num_groups,
             template_fname,
             "",
-            "style.css",
+            css,
             fname_tpl,
         )
         t3 = time.perf_counter()
