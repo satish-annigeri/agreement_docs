@@ -80,17 +80,14 @@ def main(
     t2 = time.perf_counter()
     con.log(f"Data preparation complete {t2 - t1:.2f}s")
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
-    # css = "agreement.css"
 
     if tpl_type == "docx":
-        # con.print("Preparing Microsoft Word agreement files...")
         flist = docx_merge(
             distributors, grouped_df, num_groups, template_fname, fname_tpl
         )
         t3 = time.perf_counter()
         con.log(f"Generating Microsoft Word agreement documents took {t3 - t2:.2f}s")
 
-        # print("Converting Microsoft Word files to PDF and deleting them...")
         match platform.system():
             case "Linux":
                 docx2pdf_linux(flist)
