@@ -15,7 +15,9 @@ from rich.progress import (
 import pendulum
 from jinja2 import Environment, FileSystemLoader
 import mistune
-from weasyprint import HTML, __version__ as wezp_ver
+from weasyprint import HTML, CSS, __version__ as wezp_ver
+from weasyprint.text.fonts import FontConfiguration
+
 
 from utils import tpl_suffix
 
@@ -27,7 +29,7 @@ from mergedata import (
 
 re_html_fname = re.compile(r".*[.]html$", re.I)
 
-
+font_config = FontConfiguration()
 con = Console()
 
 
@@ -59,9 +61,7 @@ def md2html(md_fname: str) -> str:
 def md_html_mergefields(
     jinja_tpl,
     tpl_type: str,
-    # tpl_fname: str,
-    # tpl_dir: str,
-    css: str,
+    css: CSS,
     pdf_fname: str,
     distributor_data,
     exhibitor_data,
@@ -85,11 +85,13 @@ def md_html_mergefields(
             time_now=time_now,
             weasyprint_ver=wezp_ver,
         )
-    HTML(string=html_content).write_pdf(pdf_fname, stylesheets=[css])
+    HTML(string=html_content).write_pdf(
+        pdf_fname, stylesheets=[css], font_config=font_config
+    )
 
 
 def md_html_merge(
-    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css, fname_tpl
+    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css_fname, fname_tpl
 ):
     distributor_data = extract_distributor_data(distributors)
 
@@ -106,6 +108,7 @@ def md_html_merge(
     )
     tpl_type = tpl_suffix(tpl_fname)
     jinja_tpl = get_jinja2_template(tpl_fname, tpl_dir)
+    css = CSS(filename=css_fname)
 
     with progress:
         task = progress.add_task(
@@ -168,6 +171,8 @@ if __name__ == "__main__":
         html_content = tpl.render(title=title, headigns=headings)
     if html_content:
         print(f"Writing: {pdf_fname}")
-        HTML(string=html_content).write_pdf(pdf_fname, stylesheets=[css])
+        HTML(string=html_content).write_pdf(
+            pdf_fname, stylesheets=[css], font_config=font_config
+        )
     t2 = time.perf_counter()
     print(f"Total time: {t2 - t1:.4f}s")
