@@ -1,6 +1,8 @@
 import re
 import time
 from os.path import abspath, splitext
+
+
 from rich.console import Console
 from rich.progress import (
     Progress,
@@ -10,10 +12,10 @@ from rich.progress import (
     TaskProgressColumn,
     TimeElapsedColumn,
 )
-
+import pendulum
 from jinja2 import Environment, FileSystemLoader
 import mistune
-from weasyprint import HTML
+from weasyprint import HTML, __version__ as wezp_ver
 
 from utils import tpl_suffix
 
@@ -22,7 +24,6 @@ from mergedata import (
     extract_exhibitor_data,
     extract_annexure_data,
 )
-
 
 re_html_fname = re.compile(r".*[.]html$", re.I)
 
@@ -66,11 +67,15 @@ def md_html_mergefields(
     exhibitor_data,
     annexure,
 ):
+    time_now = pendulum.now().format("YYYY-MM-DDTHH:MM:SSZ")
+    print(time_now)
     if tpl_type == "md":
         md_content = jinja_tpl.render(
             **distributor_data,
             **exhibitor_data,
             annexure=annexure,
+            time_now=time_now,
+            weasyprint_ver=wezp_ver,
         )
         html_content = mistune.html(md_content)
     elif tpl_type == "html":
@@ -78,6 +83,8 @@ def md_html_mergefields(
             **distributor_data,
             **exhibitor_data,
             annexure=annexure,
+            time_now=time_now,
+            weasyprint_ver=wezp_ver,
         )
     HTML(string=html_content).write_pdf(pdf_fname, stylesheets=[css])
 
@@ -130,8 +137,6 @@ def md_html_merge(
             md_html_mergefields(
                 jinja_tpl,
                 tpl_type,
-                # tpl_fname,
-                # tpl_dir,
                 css,
                 pdf_fname,
                 distributor_data=distributor_data,
