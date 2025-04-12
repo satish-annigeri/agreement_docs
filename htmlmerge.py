@@ -61,7 +61,7 @@ def md2html(md_fname: str) -> str:
 def md_html_mergefields(
     jinja_tpl,
     tpl_type: str,
-    css: str,
+    css_fname: str,
     pdf_fname: str,
     distributor_data,
     exhibitor_data,
@@ -86,12 +86,12 @@ def md_html_mergefields(
             weasyprint_ver=wezp_ver,
         )
     HTML(string=html_content).write_pdf(
-        pdf_fname, stylesheets=[css], font_config=font_config
+        pdf_fname, stylesheets=[css_fname], font_config=font_config
     )
 
 
 def md_html_merge(
-    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css, fname_tpl
+    distributors, grouped_df, num_groups: int, tpl_fname, tpl_dir, css_fname, fname_tpl
 ):
     distributor_data = extract_distributor_data(distributors)
 
@@ -138,7 +138,7 @@ def md_html_merge(
             md_html_mergefields(
                 jinja_tpl,
                 tpl_type,
-                css,
+                css_fname,
                 pdf_fname,
                 distributor_data=distributor_data,
                 exhibitor_data=exhibitor_data,
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     basename, _ = splitext(tpl_fname)
     basename, suffix = splitext(basename)
     pdf_fname = f"{basename}.pdf"
-    css = "agreement.css"
+    # css = "agreement.css"
 
     print(f"Jinja2 template: {tpl_fname}")
     tpl = get_jinja2_template(tpl_fname, "")
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     if html_content:
         print(f"Writing: {pdf_fname}")
         HTML(string=html_content).write_pdf(
-            pdf_fname, stylesheets=[css], font_config=font_config
+            pdf_fname, stylesheets=["agreement.css"], font_config=font_config
         )
     t2 = time.perf_counter()
     print(f"Total time: {t2 - t1:.4f}s")
