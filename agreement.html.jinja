@@ -57,8 +57,8 @@
         <li>Service Charge or/and Theatre Maintenance Charges shall not be deducted in admission/ticket rates.</li>
         <li>The exhibitor is bound by this agreement to submit daily collection reports and weekly collection summary
             duly stamped and signed authenticating the document. In absence of such documents the bills raised by {{dist_name | title}} will be bonding on the entity / Theatre / Person / exhibitor.</li>
-        {% if advance_amt != "Rs. -NIL-" %}
-        <li>That the exhibitor agrees to pay the advance of <b>{{advance_amt}}</b> before the movie release.</li>
+        {% if advance_amt != "₹ -NIL-" %}
+        <li>That the exhibitor agrees to pay the advance of <b>₹ {{advance_amt}}</b> before the movie release.</li>
         {% endif %}
         <li>The share amount shall be transferred through RTGS transfer only.</li>
         <li>Bank details are as under:<br>
@@ -121,7 +121,7 @@
                 <td style="text-align: center;">{{loop.index}}</td>
                 <td>{{row.theatre}}</td>
                 <td>{{row.station}}</td>
-                <td style="text-align: center;">{{row.mg_str}}</td>
+                <td style="text-align: center;">₹ {{row.mg_str}}</td>
                 <td>{{row.theatre_share}}</td>
             </tr>
             {% endfor %}

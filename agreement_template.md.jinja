@@ -53,7 +53,7 @@ This agreement made and entered herein at {{dist_place}} between **{{dist_name}}
 2. The entity / Theatre/Person/the exhibitor will be responsible for making the payment of distributor share along with applicable GST as per the tax invoice raised by the distributor.
 3. Service Charge or/and Theatre Maintenance Charges shall not be deducted in admission/ticket rates.
 4. The exhibitor is bound by this agreement to submit daily collection reports and weekly collection summary duly stamped and signed authenticating the document. In absence of such documents the bills raised by {{dist_name}} will be bonding on the entity / Theatre / Person / the exhibitor.
-{% if advance_amt != "Rs. -NIL-" %}
+{% if advance_amt != "-NIL-" %}
 5. That the exhibitor agrees to pay the advance of {{advance_amt}} before the movie release.
 {% endif %}
 6. The share amount shall be transferred through RTGS transfer only.
@@ -104,7 +104,7 @@ This agreement made and entered herein at {{dist_place}} between **{{dist_name}}
     <td style="text-align: center;">{{loop.index}}</td>
     <td>{{row.theatre}}</td>
     <td>{{row.station}}</td>
-    <td>{{row.mg_str}}</td>
+    <td>₹ {{row.mg_str}}</td>
     <td>{{row.theatre_share}}</td>
   </tr>
 {% endfor %}

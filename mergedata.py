@@ -13,7 +13,7 @@ con = Console()
 
 def fmt_indian(n: float, trunc: bool = True):
     if not n:
-        return "Rs. -NIL-"
+        return "-NIL-"
     s = str(int(float(n))) if trunc else str(n)
     d = [3, 2, 2, 2]
     i = 0
@@ -30,7 +30,7 @@ def fmt_indian(n: float, trunc: bool = True):
     c = ",".join(c[::-1])
     if trunc:
         c += "/-"
-    c = "Rs. " + c
+    # c = "₹ " + c
     return c
 
 
