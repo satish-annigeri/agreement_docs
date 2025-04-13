@@ -1,5 +1,5 @@
 from os.path import isfile
-
+from math import isclose
 import polars as pl
 import pendulum
 from rich.console import Console
@@ -11,26 +11,28 @@ con = Console()
 # ---- General purpose functions ----
 
 
-def fmt_indian(n: float, trunc: bool = True):
-    if not n:
-        return "-NIL-"
-    s = str(int(float(n))) if trunc else str(n)
-    d = [3, 2, 2, 2]
-    i = 0
-    c = []
-    i2 = len(s)
-    while i < len(d):
-        i1 = i2 - d[i]
-        if i1 < 0:
-            i1 = 0
-        c.append(s[i1:i2])
-        i += 1
-        i2 = i1
-    c = [cc for cc in c if cc]
-    c = ",".join(c[::-1])
-    if trunc:
-        c += "/-"
-    # c = "₹ " + c
+def fmt_indian(n: float, currency: str = "₹", trunc: bool = True):
+    if not n or isclose(n, 0.0):
+        c = "-NIL-"
+    else:
+        s = str(int(float(n))) if trunc else str(n)
+        d = [3, 2, 2, 2]
+        i = 0
+        c = []
+        i2 = len(s)
+        while i < len(d):
+            i1 = i2 - d[i]
+            if i1 < 0:
+                i1 = 0
+            c.append(s[i1:i2])
+            i += 1
+            i2 = i1
+        c = [cc for cc in c if cc]
+        c = ",".join(c[::-1])
+
+        if trunc:
+            c += "/-"
+    c = f"{currency} {c}"
     return c
 
 
