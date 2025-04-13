@@ -14,11 +14,7 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from mergedata import (
-    extract_distributor_data,
-    extract_exhibitor_data,
-    extract_annexure_data,
-)
+
 from utils import with_suffix
 
 con = Console()
@@ -57,58 +53,6 @@ def docx_mergefields(
     tpl.merge(**exhibitor_data)
     tpl.merge_rows("slno", annexure)
     tpl.write(docx_output_fname)
-
-
-def docx_merge(distributors, grouped_df, num_groups: int, docx_tpl_fname, fname_tpl):
-    distributor_data = extract_distributor_data(distributors)
-
-    count = 0
-    flist = []
-
-    progress = Progress(
-        TaskProgressColumn(),
-        SpinnerColumn(),
-        MofNCompleteColumn(),
-        TextColumn("[cyan]{task.fields[progress_description]}"),
-        TextColumn("[bold cyan]{task.fields[task_description]}"),
-    )
-    with progress:
-        task = progress.add_task(
-            "[cyan]Generating Word file:",
-            total=num_groups,
-            progress_description="[cyan]Generating Word file:",
-            task_description="Filename",
-        )
-        for g_exhibitors, g_theatres in grouped_df:
-            count += 1
-            exhibitor_data = extract_exhibitor_data(g_exhibitors, g_theatres)
-            annexure = extract_annexure_data(g_theatres)
-            docx_output_fname = f"{
-                fname_tpl.format(
-                    count=count,
-                    movie=exhibitor_data['movie'].lower(),
-                    exhibitor=exhibitor_data['exhibitor']
-                    .replace('/', '')
-                    .replace(' ', '_')
-                    .lower(),
-                    release_date=exhibitor_data['release_date'],
-                )
-            }.docx"
-            progress.update(
-                task, task_description=f"{with_suffix(docx_output_fname, '.pdf')}"
-            )
-
-            docx_mergefields(
-                docx_tpl_fname,
-                docx_output_fname,
-                distributor_data,
-                exhibitor_data,
-                annexure,
-            )
-            progress.advance(task)
-
-            flist.append(docx_output_fname)
-    return flist
 
 
 def docx2pdf_linux(docx_flist):

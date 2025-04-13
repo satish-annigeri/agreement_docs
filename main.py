@@ -8,15 +8,23 @@ from rich.console import Console
 import typer
 
 
-from utils import tpl_suffix
-from mergedata import read_data, prepare_data, group_data, unique_rows
+from utils import tpl_suffix, get_fname
+from mergedata import (
+    read_data,
+    prepare_data,
+    group_data,
+    # unique_rows,
+    extract_distributor_data,
+    extract_exhibitor_data,
+    extract_annexure_data,
+)
 from docxmerge import (
-    docx_merge,
+    docx_mergefields,
     docx2pdf_linux,
     docx2pdf_windows,
     print_header,
 )  # get_docx_mergefields,
-from htmlmerge import md_html_merge
+from htmlmerge import md_html_mergefields, get_jinja2_template
 
 
 app = typer.Typer()
@@ -57,6 +65,7 @@ def main(
     exhibitor_fname = exhibitor
     theatre_fname = theatre
     template_fname = template
+    css_fname = css
 
     distributors, exhibitors, theatres = read_data(
         distributor_fname, exhibitor_fname, theatre_fname, verbose=True
@@ -76,18 +85,55 @@ def main(
         "agreement_date",
     ]
     grouped_df = group_data(df, group_cols)
-    num_groups = unique_rows(df, group_cols)
+    # num_groups = unique_rows(df, group_cols)
     t2 = time.perf_counter()
     con.log(f"Data preparation complete {t2 - t1:.2f}s")
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
 
-    if tpl_type == "docx":
-        flist = docx_merge(
-            distributors, grouped_df, num_groups, template_fname, fname_tpl
-        )
-        t3 = time.perf_counter()
-        con.log(f"Generating Microsoft Word agreement documents took {t3 - t2:.2f}s")
+    distributor_data = extract_distributor_data(distributors)
 
+    count = 0
+    flist = []
+    if tpl_type in ["md", "html"]:
+        jinja_template = get_jinja2_template(template_fname, "")
+    for g_exhibitor, g_theatres in grouped_df:
+        count += 1
+        exhibitor_data = extract_exhibitor_data(g_exhibitor, g_theatres)
+        annexure = extract_annexure_data(g_theatres)
+
+        output_fname = get_fname(
+            fname_tpl,
+            count=count,
+            movie=exhibitor_data["movie"].lower(),
+            exhibitor=exhibitor_data["exhibitor"],
+            release_date=exhibitor_data["release_date"],
+        )
+        if tpl_type == "docx":
+            output_fname = f"{output_fname}.docx"
+            docx_mergefields(
+                template_fname,
+                output_fname,
+                distributor_data,
+                exhibitor_data,
+                annexure,
+            )
+        elif tpl_type in ["html", "md"]:
+            output_fname = f"{output_fname}.pdf"
+            md_html_mergefields(
+                jinja_template,
+                tpl_type,
+                css_fname,
+                output_fname,
+                distributor_data=distributor_data,
+                exhibitor_data=exhibitor_data,
+                annexure=annexure,
+            )
+        else:
+            con.print("Unknown template type. Exiting...")
+            sys.exit(1)
+        flist.append(output_fname)
+        con.print(output_fname)
+    if tpl_type == "docx":
         match platform.system():
             case "Linux":
                 docx2pdf_linux(flist)
@@ -95,27 +141,8 @@ def main(
                 docx2pdf_windows(flist)
             case _:
                 raise OSError
-        t4 = time.perf_counter()
-        con.log(f"Converting Microsoft Word files to PDF took {t4 - t3:.2f}s")
-        t_stop = t4
-    elif tpl_type in ["md", "html"]:
-        flist = md_html_merge(
-            distributors,
-            grouped_df,
-            num_groups,
-            template_fname,
-            "",
-            css,
-            fname_tpl,
-        )
-        t3 = time.perf_counter()
-        t_stop = t3
-        con.log(f"Converting Markdown/HTML files to PDF took {t3 - t2:.2f}s")
-    else:
-        print(
-            f"Invalid template file {template_fname}. Must be a '.md.jinja' or '.html.jinja'"
-        )
-        sys.exit(1)
+    t3 = time.perf_counter()
+    t_stop = t3
     t_total = t_stop - t_start
     con.print(
         f"\nTotal execution time: {t_total:.2f}s for {len(flist)} files. Average: {t_total / len(flist):.2f}s per file."
