@@ -5,6 +5,14 @@ from typing_extensions import Annotated
 
 
 from rich.console import Console
+from rich.progress import (
+    Progress,
+    TextColumn,
+    SpinnerColumn,
+    MofNCompleteColumn,
+    TaskProgressColumn,
+    TimeElapsedColumn,
+)
 import typer
 
 
@@ -13,7 +21,7 @@ from mergedata import (
     read_data,
     prepare_data,
     group_data,
-    # unique_rows,
+    unique_rows,
     extract_distributor_data,
     extract_exhibitor_data,
     extract_annexure_data,
@@ -23,7 +31,7 @@ from docxmerge import (
     docx2pdf_linux,
     docx2pdf_windows,
     print_header,
-)  # get_docx_mergefields,
+)
 from htmlmerge import md_html_mergefields, get_jinja2_template
 
 
@@ -85,7 +93,7 @@ def main(
         "agreement_date",
     ]
     grouped_df = group_data(df, group_cols)
-    # num_groups = unique_rows(df, group_cols)
+    num_groups = unique_rows(df, group_cols)
     t2 = time.perf_counter()
     con.log(f"Data preparation complete {t2 - t1:.2f}s")
     fname_tpl = "{count:02}_{movie}_{exhibitor}_{release_date}"
@@ -96,43 +104,65 @@ def main(
     flist = []
     if tpl_type in ["md", "html"]:
         jinja_template = get_jinja2_template(template_fname, "")
-    for g_exhibitor, g_theatres in grouped_df:
-        count += 1
-        exhibitor_data = extract_exhibitor_data(g_exhibitor, g_theatres)
-        annexure = extract_annexure_data(g_theatres)
 
-        output_fname = get_fname(
-            fname_tpl,
-            count=count,
-            movie=exhibitor_data["movie"].lower(),
-            exhibitor=exhibitor_data["exhibitor"],
-            release_date=exhibitor_data["release_date"],
+    progress = Progress(
+        TaskProgressColumn(),
+        SpinnerColumn(),
+        TimeElapsedColumn(),
+        MofNCompleteColumn(),
+        TextColumn("[cyan]{task.fields[progress_description]}"),
+        TextColumn("[bold cyan]{task.fields[task_description]}"),
+    )
+    with progress:
+        task = progress.add_task(
+            "",
+            total=num_groups,
+            progress_description="",
+            task_description="Filename",
         )
-        if tpl_type == "docx":
-            output_fname = f"{output_fname}.docx"
-            docx_mergefields(
-                template_fname,
-                output_fname,
-                distributor_data,
-                exhibitor_data,
-                annexure,
+        # --------------------------
+        for g_exhibitor, g_theatres in grouped_df:
+            count += 1
+            exhibitor_data = extract_exhibitor_data(g_exhibitor, g_theatres)
+            annexure = extract_annexure_data(g_theatres)
+
+            output_fname = get_fname(
+                fname_tpl,
+                count=count,
+                movie=exhibitor_data["movie"].lower(),
+                exhibitor=exhibitor_data["exhibitor"],
+                release_date=exhibitor_data["release_date"],
             )
-        elif tpl_type in ["html", "md"]:
-            output_fname = f"{output_fname}.pdf"
-            md_html_mergefields(
-                jinja_template,
-                tpl_type,
-                css_fname,
-                output_fname,
-                distributor_data=distributor_data,
-                exhibitor_data=exhibitor_data,
-                annexure=annexure,
-            )
-        else:
-            con.print("Unknown template type. Exiting...")
-            sys.exit(1)
-        flist.append(output_fname)
-        con.print(output_fname)
+
+            if tpl_type == "docx":
+                output_fname = f"{output_fname}.docx"
+                progress.update(task, task_description=f"{output_fname}")
+                docx_mergefields(
+                    template_fname,
+                    output_fname,
+                    distributor_data,
+                    exhibitor_data,
+                    annexure,
+                )
+            elif tpl_type in ["html", "md"]:
+                output_fname = f"{output_fname}.pdf"
+                progress.update(task, task_description=f"{output_fname}")
+                md_html_mergefields(
+                    jinja_template,
+                    tpl_type,
+                    css_fname,
+                    output_fname,
+                    distributor_data=distributor_data,
+                    exhibitor_data=exhibitor_data,
+                    annexure=annexure,
+                )
+            else:
+                con.print("Unknown template type. Exiting...")
+                sys.exit(1)
+            flist.append(output_fname)
+            progress.advance(task)
+    # --------------------------
+
     if tpl_type == "docx":
         match platform.system():
             case "Linux":

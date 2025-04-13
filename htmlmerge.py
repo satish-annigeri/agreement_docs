@@ -5,14 +5,7 @@ from os.path import abspath, splitext
 
 from rich.console import Console
 
-# from rich.progress import (
-#     Progress,
-#     TextColumn,
-#     SpinnerColumn,
-#     MofNCompleteColumn,
-#     TaskProgressColumn,
-#     TimeElapsedColumn,
-# )
+
 import pendulum
 from jinja2 import Environment, FileSystemLoader
 import mistune
