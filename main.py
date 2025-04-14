@@ -161,17 +161,33 @@ def main(
                 sys.exit(1)
             flist.append(output_fname)
             progress.advance(task)
+        t3 = time.perf_counter()
     # --------------------------
 
     if tpl_type == "docx":
-        match platform.system():
-            case "Linux":
-                docx2pdf_linux(flist)
-            case "Windows":
-                docx2pdf_windows(flist)
-            case _:
-                raise OSError
-    t3 = time.perf_counter()
+        pdf_progress = Progress(
+            TaskProgressColumn(),
+            SpinnerColumn(),
+            TimeElapsedColumn(),
+            TextColumn("[cyan]{task.fields[progress_description]}"),
+            TextColumn("[bold cyan]{task.fields[task_description]}"),
+        )
+        with pdf_progress:
+            pdf_task = pdf_progress.add_task(
+                "",
+                total=1,
+                progress_description="Converting Microsoft Word files to PDF...",
+                task_description="",
+            )
+            match platform.system():
+                case "Linux":
+                    docx2pdf_linux(flist)
+                case "Windows":
+                    docx2pdf_windows(flist)
+                case _:
+                    raise OSError
+            pdf_progress.advance(pdf_task)
+        t3 = time.perf_counter()
     t_stop = t3
     t_total = t_stop - t_start
     con.print(

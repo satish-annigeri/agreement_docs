@@ -30,7 +30,7 @@ theatres_fname = "chhaava_theatres.xlsx"
 template_fname = "agreement.html.jinja"
 # template_fname = "agreement_template.docx"
 tpl_type = tpl_suffix(template_fname)
-css_fname = "agreement.css" if tpl_type in ["html", "md"] else None
+css_fname = "agreement.css" if tpl_type in ["html", "md"] else ""
 
 
 # Read data
