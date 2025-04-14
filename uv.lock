@@ -571,6 +571,7 @@ dependencies = [
     { name = "pendulum" },
     { name = "pikepdf" },
     { name = "polars" },
+    { name = "streamlit" },
     { name = "typer" },
     { name = "weasyprint" },
 ]
@@ -598,6 +599,7 @@ requires-dist = [
     { name = "pendulum", specifier = ">=3.0.0" },
     { name = "pikepdf", specifier = ">=9.5.2" },
     { name = "polars", specifier = ">=1.23.0" },
+    { name = "streamlit", specifier = ">=1.44.1" },
     { name = "typer", specifier = ">=0.15.1" },
     { name = "weasyprint", specifier = ">=65.0" },
 ]

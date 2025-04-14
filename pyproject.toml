@@ -11,6 +11,7 @@ dependencies = [
     "pendulum>=3.0.0",
     "pikepdf>=9.5.2",
     "polars>=1.23.0",
+    "streamlit>=1.44.1",
     "typer>=0.15.1",
     "weasyprint>=65.0",
 ]
