@@ -104,7 +104,7 @@ def main(
     if tpl_type in ["md", "html"]:
         jinja_template = get_jinja2_template(template_fname, "")
     elif tpl_type == "docx":
-        soffice_path, cmd_list = detect_soffice_path()
+        soffice_path, cmd_list, shell = detect_soffice_path()
     else:
         print(
             f"Unknown template type: {tpl_type}. Supported types are: md, html, docx\nProgram aborted"
@@ -152,7 +152,7 @@ def main(
                     exhibitor_data,
                     annexure,
                 )
-                soffice_docx2pdf(output_fname, cmd_list)
+                soffice_docx2pdf(output_fname, cmd_list, shell)
                 os.remove(output_fname)
             elif tpl_type in ["html", "md"]:
                 output_fname = f"{output_fname}.pdf"

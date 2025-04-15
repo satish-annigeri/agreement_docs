@@ -65,6 +65,7 @@ def detect_soffice_path(suggested_path: str = ""):
             "pdf:writer_pdf_Export",
             "",
         ]
+        shell = True
     elif platform.system() == "Linux":
         res = subprocess.run("which soffice", shell=True, capture_output=True)
         if res.returncode == 0:
@@ -87,6 +88,7 @@ def detect_soffice_path(suggested_path: str = ""):
             "/dev/null",
             "2>&1",
         ]
+        shell = False
     elif platform.system() == "Darwin":
         res = subprocess.run("which soffice", shell=True, capture_output=True)
         if res.returncode == 0:
@@ -109,15 +111,18 @@ def detect_soffice_path(suggested_path: str = ""):
             "/dev/null",
             "2>&1",
         ]
+        shell = False
     else:
         raise OSError("Unsupported OS")
-    return soffice_path, cmd_list
+    return soffice_path, cmd_list, shell
 
 
-def soffice_docx2pdf(docx_fname: str, cmd_list: list[str], verbose: bool = False):
+def soffice_docx2pdf(
+    docx_fname: str, cmd_list: list[str], shell: bool, verbose: bool = False
+):
     cmd_list[4] = docx_fname
-    res = subprocess.run(cmd_list, shell=True, capture_output=True)
-    # print(res)
+    print("***", " ".join(cmd_list))
+    res = subprocess.run(cmd_list, shell=shell, capture_output=True)
     if verbose and res.returncode == 0:
         con.log(f"Converted {docx_fname} to PDF successfully.")
 
@@ -178,10 +183,17 @@ def soffice_docx2pdf(docx_fname: str, cmd_list: list[str], verbose: bool = False
 
 
 if __name__ == "__main__":
-    soffice_path, cmd_list = detect_soffice_path()
+    soffice_path, cmd_list, shell = detect_soffice_path()
+    docx_fname = "test.docx"
     if soffice_path:
         print(f"LibreOffice path: {soffice_path}")
-        print(f"Command list: {cmd_list}")
-        soffice_docx2pdf("agreement_template.docx", cmd_list)
+        # print(f"Command list: {cmd_list}")
+        soffice_docx2pdf("test.docx", cmd_list, shell)
     else:
         print("LibreOffice path not detected. Please install LibreOffice.")
+
+    # cmd_list[4] = docx_fname
+    # print("***", " ".join(cmd_list))
+    # res = subprocess.run(cmd_list, shell=False, capture_output=True)
+    # if res.returncode == 0:
+    #     con.log(f"Converted {docx_fname} to PDF successfully.")
