@@ -155,7 +155,6 @@ def main(
                 )
                 soffice_docx2pdf(output_fname, cmd_list)
                 os.remove(output_fname)
-
             elif tpl_type in ["html", "md"]:
                 output_fname = f"{output_fname}.pdf"
                 progress.update(task, task_description=f"{output_fname}")
@@ -172,6 +171,7 @@ def main(
                 con.print("Unknown template type. Exiting...")
                 sys.exit(1)
             progress.advance(task)
+            break  # Remove this break to process all files
         t3 = time.perf_counter()
     # --------------------------
 

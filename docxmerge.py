@@ -117,6 +117,7 @@ def detect_soffice_path(suggested_path: str = ""):
 def soffice_docx2pdf(docx_fname: str, cmd_list: list[str], verbose: bool = False):
     cmd_list[4] = cmd_list[4].format(docx_fname=docx_fname)
     res = subprocess.run(cmd_list, shell=True, capture_output=True)
+    print(res)
     if verbose and res.returncode == 0:
         con.log(f"Converted {docx_fname} to PDF successfully.")
 
