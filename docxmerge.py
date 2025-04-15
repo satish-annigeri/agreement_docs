@@ -121,65 +121,9 @@ def soffice_docx2pdf(
     docx_fname: str, cmd_list: list[str], shell: bool, verbose: bool = False
 ):
     cmd_list[4] = docx_fname
-    print("***", " ".join(cmd_list))
     res = subprocess.run(cmd_list, shell=shell, capture_output=True)
     if verbose and res.returncode == 0:
         con.log(f"Converted {docx_fname} to PDF successfully.")
-
-
-# def docx2pdf_linux(docx_flist):
-#     if platform.system() == "Linux":
-#         res = subprocess.run("which soffice", shell=True, capture_output=True)
-#         if res.returncode == 0:
-#             SOFFICE_PATH = res.stdout.decode("utf-8").replace("\n", "")
-#         else:
-#             SOFFICE_PATH = "/usr/bin/soffice"
-#         if not isfile(SOFFICE_PATH):
-#             raise FileNotFoundError
-#         for docx_fname in docx_flist:
-#             res = subprocess.run(
-#                 [
-#                     f"{SOFFICE_PATH}",
-#                     "--headless",
-#                     "--convert-to",
-#                     "pdf:writer_pdf_Export",
-#                     f"{docx_fname}",
-#                     ">",
-#                     "/dev/null",
-#                     "2>&1",
-#                 ],
-#                 capture_output=True,
-#             )
-#             subprocess.run(f"rm {docx_fname}", shell=True)
-#     else:
-#         raise OSError
-
-
-# def docx2pdf_windows(docx_flist):
-#     if platform.system() == "Windows":
-#         res = subprocess.run("where soffice", shell=True, capture_output=True)
-#         if res.returncode == 0:
-#             SOFFICE_PATH = res.stdout.decode("utf-8").replace("\n", "")
-#         else:
-#             SOFFICE_PATH = r"C:\Program Files\LibreOffice\program\soffice.exe"
-#         if not isfile(SOFFICE_PATH):
-#             raise FileNotFoundError
-
-#         for docx_fname in docx_flist:
-#             res = subprocess.run(
-#                 [
-#                     f"{SOFFICE_PATH}",
-#                     "--headless",
-#                     "--convert-to",
-#                     "pdf:writer_pdf_Export",
-#                     f"{docx_fname}",
-#                 ],
-#                 shell=True,
-#                 capture_output=True,
-#             )
-#             subprocess.run(f"del {docx_fname}", shell=True)
-#     else:
-#         raise OSError
 
 
 if __name__ == "__main__":
@@ -187,13 +131,6 @@ if __name__ == "__main__":
     docx_fname = "test.docx"
     if soffice_path:
         print(f"LibreOffice path: {soffice_path}")
-        # print(f"Command list: {cmd_list}")
         soffice_docx2pdf("test.docx", cmd_list, shell)
     else:
         print("LibreOffice path not detected. Please install LibreOffice.")
-
-    # cmd_list[4] = docx_fname
-    # print("***", " ".join(cmd_list))
-    # res = subprocess.run(cmd_list, shell=False, capture_output=True)
-    # if res.returncode == 0:
-    #     con.log(f"Converted {docx_fname} to PDF successfully.")
