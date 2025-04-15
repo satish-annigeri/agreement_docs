@@ -1,6 +1,6 @@
 import sys
+import os
 import time
-import platform
 from typing_extensions import Annotated
 
 
@@ -16,7 +16,7 @@ from rich.progress import (
 import typer
 
 
-from utils import tpl_suffix, get_fname
+from utils import tpl_suffix, get_fname, with_suffix
 from mergedata import (
     read_data,
     prepare_data,
@@ -28,9 +28,9 @@ from mergedata import (
 )
 from docxmerge import (
     docx_mergefields,
-    docx2pdf_linux,
-    docx2pdf_windows,
     print_header,
+    detect_soffice_path,
+    soffice_docx2pdf,
 )
 from htmlmerge import md_html_mergefields, get_jinja2_template
 
@@ -101,9 +101,15 @@ def main(
     distributor_data = extract_distributor_data(distributors)
 
     count = 0
-    flist = []
     if tpl_type in ["md", "html"]:
         jinja_template = get_jinja2_template(template_fname, "")
+    elif tpl_type == "docx":
+        soffice_path, cmd_list = detect_soffice_path()
+    else:
+        print(
+            f"Unknown template type: {tpl_type}. Supported types are: md, html, docx\nProgram aborted"
+        )
+        sys.exit(1)
 
     progress = Progress(
         TaskProgressColumn(),
@@ -117,8 +123,8 @@ def main(
         task = progress.add_task(
             "",
             total=num_groups,
-            progress_description="",
-            task_description="Filename",
+            progress_description="Generating",
+            task_description="",
         )
         # --------------------------
         for g_exhibitor, g_theatres in grouped_df:
@@ -144,6 +150,12 @@ def main(
                     exhibitor_data,
                     annexure,
                 )
+                progress.update(
+                    task, task_description=f"{with_suffix(output_fname, '.pdf')}"
+                )
+                soffice_docx2pdf(output_fname, cmd_list)
+                os.remove(output_fname)
+
             elif tpl_type in ["html", "md"]:
                 output_fname = f"{output_fname}.pdf"
                 progress.update(task, task_description=f"{output_fname}")
@@ -159,39 +171,14 @@ def main(
             else:
                 con.print("Unknown template type. Exiting...")
                 sys.exit(1)
-            flist.append(output_fname)
             progress.advance(task)
         t3 = time.perf_counter()
     # --------------------------
 
-    if tpl_type == "docx":
-        pdf_progress = Progress(
-            TaskProgressColumn(),
-            SpinnerColumn(),
-            TimeElapsedColumn(),
-            TextColumn("[cyan]{task.fields[progress_description]}"),
-            TextColumn("[bold cyan]{task.fields[task_description]}"),
-        )
-        with pdf_progress:
-            pdf_task = pdf_progress.add_task(
-                "",
-                total=1,
-                progress_description="Converting Microsoft Word files to PDF...",
-                task_description="",
-            )
-            match platform.system():
-                case "Linux":
-                    docx2pdf_linux(flist)
-                case "Windows":
-                    docx2pdf_windows(flist)
-                case _:
-                    raise OSError
-            pdf_progress.advance(pdf_task)
-        t3 = time.perf_counter()
     t_stop = t3
     t_total = t_stop - t_start
     con.print(
-        f"\nTotal execution time: {t_total:.2f}s for {len(flist)} files. Average: {t_total / len(flist):.2f}s per file."
+        f"\nTotal execution time: {t_total:.2f}s for {num_groups} files. Average: {t_total / num_groups:.2f}s per file."
     )
 
 
