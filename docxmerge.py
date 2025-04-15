@@ -63,7 +63,7 @@ def detect_soffice_path(suggested_path: str = ""):
             "--headless",
             "--convert-to",
             "pdf:writer_pdf_Export",
-            "{docx_fname}",
+            "",
         ]
     elif platform.system() == "Linux":
         res = subprocess.run("which soffice", shell=True, capture_output=True)
@@ -82,7 +82,7 @@ def detect_soffice_path(suggested_path: str = ""):
             "--headless",
             "--convert-to",
             "pdf:writer_pdf_Export",
-            "{docx_fname}",
+            "",
             ">",
             "/dev/null",
             "2>&1",
@@ -104,7 +104,7 @@ def detect_soffice_path(suggested_path: str = ""):
             "--headless",
             "--convert-to",
             "pdf:writer_pdf_Export",
-            "{docx_fname}",
+            "",
             ">",
             "/dev/null",
             "2>&1",
@@ -115,9 +115,9 @@ def detect_soffice_path(suggested_path: str = ""):
 
 
 def soffice_docx2pdf(docx_fname: str, cmd_list: list[str], verbose: bool = False):
-    cmd_list[4] = cmd_list[4].format(docx_fname=docx_fname)
+    cmd_list[4] = docx_fname
     res = subprocess.run(cmd_list, shell=True, capture_output=True)
-    print(res)
+    # print(res)
     if verbose and res.returncode == 0:
         con.log(f"Converted {docx_fname} to PDF successfully.")
 

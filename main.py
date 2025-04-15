@@ -142,16 +142,15 @@ def main(
 
             if tpl_type == "docx":
                 output_fname = f"{output_fname}.docx"
-                progress.update(task, task_description=f"{output_fname}")
+                progress.update(
+                    task, task_description=f"=== {with_suffix(output_fname, '.pdf')}"
+                )
                 docx_mergefields(
                     template_fname,
                     output_fname,
                     distributor_data,
                     exhibitor_data,
                     annexure,
-                )
-                progress.update(
-                    task, task_description=f"{with_suffix(output_fname, '.pdf')}"
                 )
                 soffice_docx2pdf(output_fname, cmd_list)
                 os.remove(output_fname)
@@ -171,7 +170,6 @@ def main(
                 con.print("Unknown template type. Exiting...")
                 sys.exit(1)
             progress.advance(task)
-            break  # Remove this break to process all files
         t3 = time.perf_counter()
     # --------------------------
 
