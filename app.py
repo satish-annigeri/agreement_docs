@@ -1,6 +1,7 @@
 import sys
 import os
 from time import perf_counter
+import argparse
 
 
 import streamlit as st
@@ -24,17 +25,53 @@ from docxmerge import (
 )
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Agreement Document Generator App",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument("theatres", help="Theatres data file in .xlsx format")
+    parser.add_argument(
+        "-e",
+        "--exhibitors",
+        default="exhibitors.xlsx",
+        help="Exhibitors data file in .xlsx format",
+    )
+    parser.add_argument(
+        "-d",
+        "--distributors",
+        default="distributors.xlsx",
+        help="Distributor data file in .xlsx format",
+    )
+    parser.add_argument(
+        "-t",
+        "--template",
+        default="agreement.html.jinja",
+        help="Template for agreement document in .html.jinja, .md.jinja or .docx format",
+    )
+    parser.add_argument(
+        "-c", "--css", default="agreement.css", help="CSS file for HTML template"
+    )
+    return parser.parse_args()
+
+
+# ---- Streamlit App ----
+
+
 t_start = perf_counter()
-st.title("Agreement Document Generator App")
+st.title("Agreement Document Generator")
+
+args = parse_args()
+print(parse_args())
 
 # Data files
-distributors_fname = "distributors.xlsx"
-exhibitors_fname = "exhibitors.xlsx"
-theatres_fname = "chhaava_theatres.xlsx"
-# template_fname = "agreement.html.jinja"
-template_fname = "agreement_template.docx"
+distributors_fname = args.distributors  # "distributors.xlsx"
+exhibitors_fname = args.exhibitors  # "exhibitors.xlsx"
+theatres_fname = args.theatres  # "chhaava_theatres.xlsx"
+template_fname = args.template  # "agreement.html.jinja"
+# template_fname = "agreement_template.docx"
 tpl_type = tpl_suffix(template_fname)
-css_fname = "agreement.css" if tpl_type in ["html", "md"] else ""
+css_fname = args.css  # "agreement.css" if tpl_type in ["html", "md"] else ""
 
 
 msg = f"""### Input files
@@ -85,7 +122,7 @@ distributor_data = extract_distributor_data(distributors)
 if tpl_type in ["md", "html"]:
     jinja_template = get_jinja2_template(template_fname, "")
 elif tpl_type == "docx":
-    soffice_path, cmd_list = detect_soffice_path()
+    soffice_path, cmd_list, shell = detect_soffice_path()
 else:
     print(
         f"Unknown template type: {tpl_type}. Supported types are: md, html, docx\nProgram aborted"
@@ -118,7 +155,7 @@ with st.status("Generating agreement document files...", expanded=True) as statu
                 annexure,
             )
             st.write(f"Generating {with_suffix(output_fname, '.pdf')}")
-            soffice_docx2pdf(output_fname, cmd_list)
+            soffice_docx2pdf(output_fname, cmd_list, shell)
             os.remove(output_fname)
         elif tpl_type in ["html", "md"]:
             output_fname = f"{output_fname}.pdf"
