@@ -79,8 +79,6 @@ def main(
         distributor_fname, exhibitor_fname, theatre_fname, verbose=True
     )
     tpl_type = tpl_suffix(template_fname)
-    print(f"Template file: {template_fname}")
-    print(f"Template type: {tpl_type}")
     if tpl_type in ["md", "html"]:
         print(f"Stylesheet: {css}")
     distributors, df = prepare_data(distributors, exhibitors, theatres)
