@@ -2,8 +2,11 @@ import sys
 import os
 from os.path import isfile
 from time import perf_counter
+from datetime import datetime
 import typer
 from typing_extensions import Annotated
+import io
+import zipfile
 
 
 import streamlit as st
@@ -26,18 +29,11 @@ from docxmerge import (
     soffice_docx2pdf,
 )
 
-if "read_data" not in st.session_state:
-    st.session_state.read_data = ""
-if "distributors" not in st.session_state:
-    st.session_state.distributors = pl.DataFrame()
-if "exhibitors" not in st.session_state:
-    st.session_state.exhibitors = pl.DataFrame()
-if "theatres" not in st.session_state:
-    st.session_state.theatres = pl.DataFrame()
-if "tpl_fname" not in st.session_state:
-    st.session_state.tpl_fname = ""
-if "css_fname" not in st.session_state:
-    st.session_state.css_fname = ""
+
+def create_zip(flist: list[str], zip_name: str = "output.zip"):
+    with zipfile.ZipFile(zip_name, "w") as zipf:
+        for fname in flist:
+            zipf.write(fname)
 
 
 def st_read_data(
@@ -88,6 +84,22 @@ def st_read_data(
         st.session_state.tpl_fname = template_fname if isfile(template_fname) else ""
         st.session_state.css_fname = css_fname if isfile(css_fname) else ""
         st.session_state.read_data = "continue"
+
+
+if "read_data" not in st.session_state:
+    st.session_state.read_data = ""
+if "distributors" not in st.session_state:
+    st.session_state.distributors = pl.DataFrame()
+if "exhibitors" not in st.session_state:
+    st.session_state.exhibitors = pl.DataFrame()
+if "theatres" not in st.session_state:
+    st.session_state.theatres = pl.DataFrame()
+if "tpl_fname" not in st.session_state:
+    st.session_state.tpl_fname = ""
+if "css_fname" not in st.session_state:
+    st.session_state.css_fname = ""
+if "zip_downloaded" not in st.session_state:
+    st.session_state.zip_downloaded = False
 
 
 # ---- Streamlit App ----
@@ -156,6 +168,7 @@ def st_app():
             "Generating agreement document files...", expanded=True
         ) as status:
             count = 0
+            flist = []
             for g_exhibitor, g_theatres in grouped_df:
                 count += 1
                 exhibitor_data = extract_exhibitor_data(g_exhibitor, g_theatres)
@@ -199,6 +212,7 @@ def st_app():
                         f"Unknown template type: {tpl_type}. Supported types are: md, html, docx"
                     )
                     sys.exit(1)
+                flist.append(output_fname)
             t2 = t_stop = perf_counter()
 
             status.update(
@@ -209,6 +223,25 @@ def st_app():
             st.success(
                 f"Generation of PDF files is complete in {t_stop - t2:.2f}s at {(t_stop - t_start) / num_exhibitors:.2f}s per file",
             )
+
+        # Zip PDF files for download
+        today = datetime.today().strftime("%Y-%m-%d")
+        zip_fname = f"agreement_docs_{today}.zip"
+        create_zip(flist, zip_fname)
+        with open(zip_fname, "rb") as f:
+            st.download_button(
+                label="Download ZIP file",
+                data=f,
+                file_name=zip_fname,
+                mime="application/zip",
+                help="Download the generated agreement documents as a ZIP file",
+            )
+        st.session_state.zip_downloaded = True
+        st.success(f"ZIP file '{zip_fname}' downloaded successfully.")
+        # Clean up files
+        for file in flist:
+            os.remove(file)
+
         st.success(
             f"Total time taken: {t_stop - t_start:.2f}s at {(t_stop - t_start) / num_exhibitors:.2f}s per file"
         )
@@ -226,7 +259,8 @@ def main(
     st.write(f"Theatres: '{theatres}'")
     st_read_data(distributors, exhibitors, theatres, template, css)
     st_app()
-    st.stop()
+    if st.session_state.zip_downloaded:
+        st.stop()
 
 
 if __name__ == "__main__":
