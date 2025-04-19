@@ -53,6 +53,7 @@ def md_html_mergefields(
     exhibitor_data,
     annexure,
 ):
+    # print(f"md_html_mergefields: {jinja_tpl}, {tpl_type}, {css_fname}")
     time_now = pendulum.now().format("YYYY-MM-DDTHH:MM:SSZ")
     if tpl_type == "md":
         md_content = jinja_tpl.render(
