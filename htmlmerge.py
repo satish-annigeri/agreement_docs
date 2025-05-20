@@ -20,6 +20,14 @@ con = Console()
 
 
 def is_html_fname(s: str) -> bool:
+    """Check if the file name ends in  .html, case insensitive.
+
+    Args:
+        s (str): File name.
+
+    Returns:
+        bool: True if the file name is HTML, False otherwise.
+    """
     if re_html_fname.match(s):
         return True
     else:
@@ -27,6 +35,15 @@ def is_html_fname(s: str) -> bool:
 
 
 def get_jinja2_template(tpl_fname: str, tpl_dir: str):
+    """Get Jinja2 template.
+
+    Args:
+        tpl_fname (str): Template file name.
+        tpl_dir (str): Template directory.
+
+    Returns:
+        jinja2.Template: Jinja2 template object.
+    """
     tpl_dir = abspath(tpl_dir)
     env = Environment(loader=FileSystemLoader(tpl_dir))
     tpl = env.get_template(tpl_fname)
@@ -34,6 +51,14 @@ def get_jinja2_template(tpl_fname: str, tpl_dir: str):
 
 
 def md2html(md_fname: str) -> str:
+    """Convert Markdown file to HTML string.
+
+    Args:
+        md_fname (str): Markdown file name.
+
+    Returns:
+        str: HTML string representation of the contents of the Markdown file."""
+
     with open(md_fname, "r", encoding="utf-8") as md_file:
         md_content = md_file.read()
     html = mistune.html(md_content)
@@ -53,7 +78,20 @@ def md_html_mergefields(
     exhibitor_data,
     annexure,
 ):
-    # print(f"md_html_mergefields: {jinja_tpl}, {tpl_type}, {css_fname}")
+    """Merge fields in Markdown or HTML template and write to PDF.
+
+    Args:
+        jinja_tpl (jinja2.Template): Jinja2 template object.
+        tpl_type (str): Template type, either "md" or "html".
+        css_fname (str): CSS file name.
+        pdf_fname (str): PDF file name.
+        distributor_data (dict): Distributor data dictionary.
+        exhibitor_data (dict): Exhibitor data dictionary.
+        annexure (str): Annexure string.
+
+    Returns:
+        None
+    """
     time_now = pendulum.now().format("YYYY-MM-DDTHH:MM:SSZ")
     if tpl_type == "md":
         md_content = jinja_tpl.render(

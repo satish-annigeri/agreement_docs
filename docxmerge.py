@@ -14,6 +14,15 @@ con = Console()
 
 
 def print_header(header: str, underline: str = "-"):
+    """Print header with underline.
+
+    Args:
+        header (str): Header text.
+        underline (str): Underline character. Defaults to "-".
+
+    Returns:
+        None
+    """
     print()
     print(header)
     print(f"{underline * len(header)}")
@@ -24,6 +33,14 @@ def print_header(header: str, underline: str = "-"):
 
 
 def get_docx_mergefields(docx_fname: str):
+    """Get merge fields from a DOCX template.
+
+    Args:
+        docx_fname (str): DOCX template file name.
+
+    Returns:
+        list: List of merge fields in the DOCX template.
+    """
     if not isfile(docx_fname):
         raise FileNotFoundError
     else:
@@ -38,6 +55,18 @@ def docx_mergefields(
     exhibitor_data,
     annexure,
 ):
+    """Merge fields in DOCX template and write to output file.
+
+    Args:
+        docx_tpl (str): DOCX template file name.
+        docx_output_fname (str): Output DOCX file name.
+        distributor_data (dict): Distributor data dictionary.
+        exhibitor_data (dict): Exhibitor data dictionary.
+        annexure (str): Annexure string.
+
+    Returns:
+        None
+    """
     tpl = MailMerge(docx_tpl)
     tpl.merge(**distributor_data)
     tpl.merge(**exhibitor_data)
@@ -46,6 +75,15 @@ def docx_mergefields(
 
 
 def detect_soffice_path(suggested_path: str = ""):
+    """Detect the path of LibreOffice's soffice executable. If found, return the path to the
+    executable, the command list to use, and whether to use shell=True.
+
+    Args:
+        suggested_path (str): Suggested path to LibreOffice. Defaults to "".
+
+    Returns:
+        tuple: Tuple containing the path to LibreOffice, command list, and shell flag.
+    """
     if platform.system() == "Windows":
         res = subprocess.run("where soffice", shell=True, capture_output=True)
         if res.returncode == 0:
